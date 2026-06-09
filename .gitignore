@@ -26,3 +26,17 @@ packages/
 # OS files
 .DS_Store
 Thumbs.db
+
+# MAUI / Xamarin artifacts
+*.apk
+*.aab
+*.ipa
+
+# Android / iOS build artifacts
+*.nfloat.g.cs
+*.dll
+*.pdb
+*.mdb
+
+# platform specific caches
+*.cache
