@@ -18,7 +18,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Cipher_Notes")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+4834a8504dc8809263e6e791ec04b6c219b10ef4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+69ea3fdd59062742a10495e65156bea519fa052c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Cipher_Notes")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Cipher_Notes")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
