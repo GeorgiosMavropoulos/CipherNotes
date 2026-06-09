@@ -2,10 +2,10 @@
 {
     public partial class App : Application
     {
-        public App(MainPage main_page)
+        public App()
         {
             InitializeComponent();
-            MainPage = main_page;
+            
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

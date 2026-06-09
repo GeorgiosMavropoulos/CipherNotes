@@ -1,8 +1,9 @@
-﻿using SQLite;
+﻿
+using Cipher_Notes.Models;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Cipher_Notes.Models;
 
 namespace Cipher_Notes.Services
 {
@@ -12,14 +13,35 @@ namespace Cipher_Notes.Services
 
         private const string db = "cipher_notes.db"; //declaring db's name!
 
-        private readonly SQLiteAsyncConnection? _connection; //declaring a private readonly variable for the connection object!
+        private SQLiteAsyncConnection? _connection; //declaring a private readonly variable for the connection object!
+
+        private bool initialized;
+
+        private readonly SemaphoreSlim _initLock = new(1, 1);//created this variable in order to thread-safe init!
 
         //connection method
-
         public async Task InitAsync()
         {
-            //create table
-            await _connection.CreateTableAsync<SecureNotes>();
+            if (initialized) return;
+
+            await _initLock.WaitAsync();
+
+            try
+            {
+                if (initialized) return;
+
+                if (_connection == null)
+                    throw new Exception("Database connection not initialized");
+
+                await _connection.CreateTableAsync<SecureNotes>();
+
+                System.Diagnostics.Debug.WriteLine("Table SecureNotes created or already exists");
+                initialized = true;
+            }
+            finally
+            {
+                _initLock.Release(); //release thread in order not to collide if 2 methods have been called simultaneoulsy
+            }
         }
 
         //declare constructor!
@@ -33,6 +55,121 @@ namespace Cipher_Notes.Services
 
             _connection = new SQLiteAsyncConnection(db_path); //initialize the connection
         }
-       
+
+
+        //create crud operations for the DB
+
+        //get all notes function
+        public async Task<List<SecureNotes>> GetSecureNotes()
+        {
+
+            //call the db initialization method if connection has not been initialized
+            if (!initialized)
+                await InitAsync();
+
+            //try catch method to handle db errors
+            try
+            {
+                //return all notes displaying the newrest first 
+                return await _connection.Table<SecureNotes>().OrderByDescending(n => n.Created_at).ToListAsync();
+
+            }catch(Exception ex)
+            {
+                throw new Exception("Failed to get all notes", ex);
+            }
+            
+        }
+
+        //get a specific note by id function
+        public async Task<SecureNotes>? GetById(int id)
+        {
+            //call the db initialization method if connection has not been initialized
+            if (!initialized)
+                await InitAsync();
+
+            //try catch method to handle db errors
+            try
+            {
+                //return the asked note
+                return await _connection.Table<SecureNotes>().Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve note", ex);
+            }
+
+        }
+
+        //create a new note function
+        public async Task Create(SecureNotes securenote)
+        {
+            //call the db initialization method if connection has not been initialized
+            if (!initialized)
+                await InitAsync();
+
+            //try-catch method to handle unexpected errors
+            try
+            {
+                await _connection.InsertAsync(securenote);//insert the new object's details into the Db
+
+            }catch(Exception ex)
+            {
+                throw new Exception("Failed to save note in the Database", ex);
+            }
+            
+        }
+
+        //update a note function
+        public async Task Update(SecureNotes securenote)
+        {
+            //call the db initialization method if connection has not been initialized
+            if (!initialized)
+                await InitAsync();
+
+            //try-catch method to handle unexpected errors
+            try
+            {
+                int rows = await _connection.UpdateAsync(securenote);//update the new object's details into the Db
+
+                if (rows == 0) //return an error message if note does not exist or not updated
+                    throw new Exception("Note not found or not updated");
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to update note", ex);
+            }
+
+        }
+
+        //delete note function
+        public async Task Delete(int id)
+        {
+            //call the db initialization method if connection has not been initialized
+            if (!initialized)
+                await InitAsync();
+
+            //try-catch method to handle unexpected errors
+            try
+            {
+                //create the row variables in order to know whether deletion succeeded or not
+                int rows = await _connection.DeleteAsync<SecureNotes>(id);//update the new object's details into the Db
+
+               //return an error message if id does not exist
+               if(rows == 0)
+                {
+                    throw new Exception("Note does not exist");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to delete note", ex);
+            }
+        }
+
+
+
     }
 }
