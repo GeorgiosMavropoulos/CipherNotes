@@ -81,7 +81,7 @@ namespace Cipher_Notes.Services
         }
 
         //get a specific note by id function
-        public async Task<SecureNotes>? GetById(int id)
+        public async Task<SecureNotes?> GetById(int id)
         {
             //call the db initialization method if connection has not been initialized
             if (!initialized)
