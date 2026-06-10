@@ -1,5 +1,6 @@
 ﻿using Cipher_Notes.Models;
 using System;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -39,6 +40,45 @@ namespace Cipher_Notes.Services
                 throw new Exception(ex.Message, ex);
             }
         }
+
+
+            //decrypt note method
+            public async Task<string> DecryptNote(int id, string password)
+            {
+            try
+            {
+                //retrieve selected note
+                var note = await databaseService.GetById(id);
+
+                //return an error message if note does not exists
+                if (note == null)
+                {
+                    throw new Exception("Note does not exist");
+                }
+
+                    //if note exists continue decryption
+                    return encryptionService.DecryptContent
+                    (
+                        note.Encrypted_content,
+                        password,
+                        note.Salt,
+                        note.IV
+
+                    );
+
+            }
+            catch (CryptographicException) //return an error message if password is wrong
+            {
+                throw new UnauthorizedAccessException("Wrong password");
+            }
+
+            catch (Exception ex) //return an error message if decryption failed at all
+            {
+                throw new KeyNotFoundException("Error.Decryption failed", ex);
+            }
+               
+
+            }
 
 
             //update note method
