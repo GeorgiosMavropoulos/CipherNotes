@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\Cipher_Notes.props" />
-</Project>
