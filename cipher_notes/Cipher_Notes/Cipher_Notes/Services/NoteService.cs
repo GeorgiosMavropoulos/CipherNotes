@@ -175,9 +175,6 @@ namespace Cipher_Notes.Services
             }
                    
 
-
-
-
              }
 
            //delete note method
