@@ -37,7 +37,7 @@ namespace Cipher_Notes.ViewModels
             try
             {
                 //if all goes well use the decrypt method from NoteService
-                Decrypted_content = await note_service.DecryptNote(id, password);   
+                Decrypted_content = await note_service.DecryptNote(id, Password);   
 
                 
               
