@@ -46,7 +46,7 @@ namespace Cipher_Notes.ViewModels
             }
             catch (Exception ex) 
             {
-                throw new Exception("Cannot load existing notes",ex);
+                await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
             }
             
         }
@@ -78,7 +78,7 @@ namespace Cipher_Notes.ViewModels
             }
             catch (Exception ex) 
             {
-                throw new Exception("Error deleting note", ex);
+                await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
             }
 
             

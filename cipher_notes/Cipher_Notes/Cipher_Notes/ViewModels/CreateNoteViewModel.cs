@@ -14,9 +14,8 @@ namespace Cipher_Notes.ViewModels
     public partial class CreateNoteViewModel:ObservableObject
     {
         //declare variable properties
-        private SecureNotes secure_note;
+        private NoteService note_service;
 
-        public ObservableCollection<SecureNotes> Notes { get; } = new ObservableCollection<SecureNotes>();
 
         [ObservableProperty]
         private string title;
@@ -28,21 +27,24 @@ namespace Cipher_Notes.ViewModels
         private string password;
 
         //declare constructor
-        public CreateNoteViewModel(SecureNotes secure_note)
+        public CreateNoteViewModel(NoteService note_service)
         {
-            this.secure_note = secure_note; 
+            this.note_service = note_service; 
         }
 
         //create not function
+        [RelayCommand]
         public async Task CreateNote(string title, string content, string password)
         {
             //try-catch to handle unexpected errors
             try
             {
-
+                await note_service.CreateNote(Title, Content, Password);
             }
             catch (Exception ex)
             {
+                //display an error alert in UI
+                await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
 
             }
 
