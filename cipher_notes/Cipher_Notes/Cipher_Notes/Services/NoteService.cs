@@ -41,6 +41,48 @@ namespace Cipher_Notes.Services
             }
         }
 
+            //get all notes method
+            public async Task<List<SecureNotes>> GetAllNotes()
+            {
+
+            try
+            {
+                //retrieve all notes from db!
+                return await databaseService.GetSecureNotes();
+                
+
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception($"Failed to get notes", ex);
+            }
+              
+            }
+
+            //get note by id
+            public async Task<SecureNotes?> GetNoteById(int id)
+                {
+                try
+                {
+                   //create a new object to retrieve the desired note
+                   var note = await databaseService.GetById(id);
+
+                   //return an error message if note does not exist
+                   if(note == null)
+                   {
+                    throw new Exception("Note does not exist");
+                   }
+
+                  //return the note
+                   return note;
+                   }
+                catch (Exception ex) //return a general exception error
+                {
+                throw new Exception($"Failed to get note", ex);
+                }
+
+        }
+
 
             //decrypt note method
             public async Task<string> DecryptNote(int id, string password)
