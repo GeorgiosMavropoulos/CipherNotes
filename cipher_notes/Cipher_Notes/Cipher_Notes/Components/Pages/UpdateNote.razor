@@ -32,8 +32,8 @@
     {
         //display a form with note's info but allow user to edit content
         <div class="update-form">
-            <input @bind="updatedTitle" />
-            <textarea @bind="updatedContent"></textarea>
+            <input @bind="note.Title" />
+            <textarea @bind="decryptedContent"></textarea>
             <button @onclick="Update">Save</button>
         </div>
     }
@@ -51,10 +51,10 @@
 
     private string password = string.Empty;
     private string updatedTitle = string.Empty;
-    private string updatedContent = string.Empty;
+   
     private string decryptedContent = string.Empty;
     private bool isUnlocked = false;
-
+    
 
 
     protected override async Task OnInitializedAsync() //method to load on page's initialization
