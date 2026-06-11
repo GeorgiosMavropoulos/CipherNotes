@@ -5,6 +5,7 @@
 @inject NoteService NoteService
 @inject NavigationManager Navigation
 
+
 <div class="container">
     <div class="header">
         <div class="logo">
@@ -81,12 +82,30 @@
     //update note method
     private void EditNote(int id)
     {
-        
+
     }
 
     //delete note method
-    private void DeleteNote(int id)
+    private async Task DeleteNote(int id)
     {
+
+        //prompt user to validate note's deletion
+        bool confirm = await App.Current.MainPage.DisplayAlertAsync(
+                 "Confirm",
+                 "Are you sure you want to delete?",
+                 "Yes",
+                 "No");
+
+        //delete note if user confirm
+        if(confirm)
+        {
+            //call delete note method
+            await NoteService.Delete(id);
+
+            notes = await NoteService.GetAllNotes();//renew list
+
+            await App.Current.MainPage.DisplayAlertAsync("alert", "Note deleted!","BACK");    //return confirmation message
+        }
         
     }
 
