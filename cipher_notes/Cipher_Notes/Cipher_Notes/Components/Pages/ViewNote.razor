@@ -5,6 +5,8 @@
 @inject NoteService NoteService
 @inject NavigationManager Navigation
 
+
+<div class="view_note-page">
 <h3>@note?.Title</h3>
 
 @if (note == null)
@@ -31,7 +33,7 @@ else
         <button @onclick="GoBack">Back</button>
     </div>
 }
-
+</div>
 @code {
     [Parameter]
     //declare variables

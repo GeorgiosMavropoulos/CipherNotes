@@ -417,6 +417,17 @@ body {
     }
 }
 
+.view_note-page {
+    padding: 24px 16px;
+    max-width: 480px;
+    margin: auto;
+}
+
+    .view_note-page h3 {
+        margin-top: 18px;
+        margin-bottom: 20px;
+  
+
 
 
 
