@@ -1,4 +1,7 @@
-﻿namespace Cipher_Notes
+﻿using Cipher_Notes.Views;
+using Cipher_Notes.Views;
+
+namespace Cipher_Notes
 {
     public partial class App : Application
     {
@@ -12,7 +15,7 @@
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new MainPage()) { Title = "Cipher_Notes" };
+            return new Window(new NoteListPage()) { Title = "Cipher Notes" };
         }
     }
 }
