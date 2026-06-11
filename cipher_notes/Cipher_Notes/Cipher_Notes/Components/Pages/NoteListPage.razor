@@ -33,18 +33,19 @@
         <div class="notes-list">
             @foreach (var note in FilteredNotes)
             {
-                <div class="note-card">
+                <div class="note-card" @onclick="() => ViewNote(note.Id)">
                     <div class="note-header">
                         <div>
                             <h3>@note.Title</h3>
                             <p>@note.Created_at.ToString("dd/MM/yyyy")</p>
                             <span class="encrypted-badge">🔒 ENCRYPTED</span>
                             <p>⏱ @note.Created_at.ToString("dd/MM/yyyy")</p>
+
                         </div>
 
                         <div class="note-actions">
-                            <button class="action-btn edit-btn" @onclick="() => EditNote(note.Id)">✏️</button>
-                            <button class="action-btn delete-btn" @onclick="() => DeleteNote(note.Id)">🗑️</button>
+                            <button class="action-btn edit-btn" @onclick="() => EditNote(note.Id)" @onclick:stopPropagation="true">✏️</button>
+                            <button class="action-btn delete-btn" @onclick="() => DeleteNote(note.Id)" @onclick:stopPropagation="true">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -83,6 +84,21 @@
     private void EditNote(int id)
     {
 
+    }
+
+    //view and decrypt note method
+    private async Task ViewNote(int id)
+    {
+        try
+        {
+            //navigate to note page
+            Navigation.NavigateTo($"/note/{id}");
+
+
+        }catch(Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "BACK");
+        }
     }
 
     //delete note method

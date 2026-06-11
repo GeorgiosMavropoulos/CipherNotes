@@ -48,34 +48,68 @@
     private async Task SaveNote()
     {
 
-      
+
 
         //try-catch to handle errors
         try
         {
-            //return an error message for null inputs
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(password))
-            { 
-                await Application.Current.MainPage.DisplayAlert("Error", "Please fill out all inputs", "OK");
-                return;
-            }
 
-
-            if (password != confirmPassword) //return an error if passwords do not match
+            if(await ValidInput()) //if input is valid validate that passwords match
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Passwords do not match", "OK");
-                return;
+                //validate that password match
+                if(await PasswordsMatch())
+                {
+                    //create note
+                    await NoteService.CreateNote(title, content, password);
+
+                    //alert user that note has been created
+                    await App.Current.MainPage.DisplayAlertAsync("Success", "Note created!", "BACK");
+                    Navigation.NavigateTo("/");
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlertAsync("Error", "Passwords do not match", "OK");
+                }
+
+               
             }
-           
+            else
+            {
+                await Application.Current.MainPage.DisplayAlertAsync("Error", "Please fill out all inputs", "OK");
+            }
 
         }catch(Exception ex) //throw a general exception message if sth goes wrong
         {
             await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
         }
-        
 
-        await NoteService.CreateNote(title, content, password);
-        Navigation.NavigateTo("/");
+
+    }
+
+    //validate that no input is null
+    private async Task<bool> ValidInput()
+    {
+        //return an error message for null inputs
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(password))
+        {
+
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+    //method to validate that passwords match
+    private async Task<bool> PasswordsMatch()
+    {
+        if (password != confirmPassword) //return an error if passwords do not match
+        {
+            
+            return false;
+        }
+        return true;
     }
 
     private void GoBack()

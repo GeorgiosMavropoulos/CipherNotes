@@ -1,0 +1,96 @@
+﻿@using Cipher_Notes.Models
+@using Cipher_Notes.Services
+
+@page "/note/{Id:int}"
+@inject NoteService NoteService
+@inject NavigationManager Navigation
+
+<h3>@note?.Title</h3>
+
+@if (note == null)
+{
+    <p>Loading...</p>
+}
+else if (!isUnlocked)
+{
+    <div class="password-modal">
+        <h4>Unlock Note</h4>
+
+        <input type="password"
+               placeholder="Enter password"
+               @bind="password" />
+
+        <button @onclick="Decrypt">Unlock</button>
+    </div>
+}
+else
+{
+    <div class="note-content">
+        <p>@decryptedContent</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    //declare variables
+    public int Id { get; set; }
+
+    private SecureNotes? note;
+
+    private string password = string.Empty;
+    private string decryptedContent = string.Empty;
+    private bool isUnlocked = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+
+        //return to the main page is note is null
+        if (note is null)
+        {
+            await App.Current.MainPage.DisplayAlertAsync(
+                "Error",
+                "Note not found.",
+                "OK");
+
+            Navigation.NavigateTo("/", true);
+            return;
+        }
+
+
+      
+    }
+
+    //method to decrypt note
+    private async Task Decrypt()
+    {
+        //try-catch method
+        try
+        {
+            //decrypt content
+            //assign method into decryptedContent variable
+            decryptedContent = await NoteService.DecryptNote(Id, password);
+
+            //return true for is_unlock to disable pop up window
+            isUnlocked = true;
+
+        }catch(UnauthorizedAccessException) //return an error message in UI if passwords do not match
+        {
+            await App.Current.MainPage.DisplayAlertAsync(
+                "Wrong password",
+                "Try again",
+                "OK");
+
+            //clear password
+            password = string.Empty;
+
+        }catch(Exception ex) //return a general exception message
+        {
+            await App.Current.MainPage.DisplayAlertAsync(
+               "Error",
+               ex.Message,
+               "OK");
+        }
+    }
+
+}
