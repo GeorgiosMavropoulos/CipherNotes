@@ -75,4 +75,19 @@
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     </ItemGroup>
 
+    <ItemGroup>
+      <MauiXaml Update="Views\CreateNotePage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\DecryptNotePage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\NoteListPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\UpdateNotePage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
 </Project>

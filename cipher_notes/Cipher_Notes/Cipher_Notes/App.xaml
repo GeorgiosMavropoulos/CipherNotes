@@ -6,11 +6,13 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            <!--
-                For information about styling .NET MAUI pages
-                please refer to the documentation:
-                https://go.microsoft.com/fwlink/?linkid=2282329
-            -->
+            <Color x:Key="PageBackground">#020B1C</Color>
+            <Color x:Key="CardBackground">#101827</Color>
+            <Color x:Key="AccentColor">#14C8B8</Color>
+            <Color x:Key="ButtonColor">#0FA392</Color>
+            <Color x:Key="PrimaryText">#FFFFFF</Color>
+            <Color x:Key="SecondaryText">#8FA1B8</Color>
+            <Color x:Key="BorderColor">#1E2A3C</Color>
 
         </ResourceDictionary>
     </Application.Resources>

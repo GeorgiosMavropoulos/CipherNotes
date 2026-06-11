@@ -34,7 +34,7 @@ namespace Cipher_Notes.ViewModels
 
         //create not function
         [RelayCommand]
-        public async Task CreateNote(string title, string content, string password)
+        public async Task CreateNote()
         {
             //try-catch to handle unexpected errors
             try
