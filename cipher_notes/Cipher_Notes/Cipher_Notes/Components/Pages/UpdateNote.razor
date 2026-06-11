@@ -35,6 +35,7 @@
             <input @bind="note.Title" />
             <textarea @bind="decryptedContent"></textarea>
             <button @onclick="Update">Save</button>
+            <button @onclick="GoBack">Back</button>
         </div>
     }
 
@@ -51,10 +52,10 @@
 
     private string password = string.Empty;
     private string updatedTitle = string.Empty;
-   
+
     private string decryptedContent = string.Empty;
     private bool isUnlocked = false;
-    
+
 
 
     protected override async Task OnInitializedAsync() //method to load on page's initialization
@@ -112,9 +113,38 @@
     }
 
     //update note method
-    private void Update()
+    private async Task Update()
     {
-        
+        try
+        {
+            //if user confirms the update, update the note
+            if (await ConfirmUpdate())
+            {
+                await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
+                                                                                         //return an success message
+                await App.Current.MainPage.DisplayAlertAsync("Success", "Note has been updated", "OK");
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
+            }
+
+            
+        }catch(Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", "Cannot update note", "OK");
+        }
+    }
+
+    //prompt user to confirm the update
+    private async Task<bool> ConfirmUpdate()
+    {
+        return  await App.Current.MainPage.DisplayAlertAsync(
+                "Confirm",
+                "Are you sure you want to update the note?",
+                "OK",
+                "CANCEL");
+      
     }
 
     //return to main page method
