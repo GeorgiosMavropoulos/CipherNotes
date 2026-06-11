@@ -28,12 +28,24 @@
     }
     else
     {
+        //display all notes. Each note has a menu which is being displayed after clicking on the ... This menu provides delete/update cancel options
         <div class="notes-list">
             @foreach (var note in FilteredNotes)
             {
                 <div class="note-card">
-                    <h3>@note.Title</h3>
-                    <p>@note.Created_at.ToString("dd/MM/yyyy")</p>
+                    <div class="note-header">
+                        <div>
+                            <h3>@note.Title</h3>
+                            <p>@note.Created_at.ToString("dd/MM/yyyy")</p>
+                            <span class="encrypted-badge">🔒 ENCRYPTED</span>
+                            <p>⏱ @note.Created_at.ToString("dd/MM/yyyy")</p>
+                        </div>
+
+                        <div class="note-actions">
+                            <button class="action-btn edit-btn" @onclick="() => EditNote(note.Id)">✏️</button>
+                            <button class="action-btn delete-btn" @onclick="() => DeleteNote(note.Id)">🗑️</button>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -46,12 +58,36 @@
     private List<SecureNotes> notes = new();
     private string searchQuery = "";
 
+    private int? openMenuId = null;
+
+    private void ToggleMenu(int id)
+    {
+        openMenuId = openMenuId == id ? null : id;
+    }
+
+    private void CloseMenu()
+    {
+        openMenuId = null;
+    }
+
     private IEnumerable<SecureNotes> FilteredNotes =>
         notes.Where(n => n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
         notes = await NoteService.GetAllNotes();
+    }
+
+    //update note method
+    private void EditNote(int id)
+    {
+        
+    }
+
+    //delete note method
+    private void DeleteNote(int id)
+    {
+        
     }
 
     private void GoToCreate()
