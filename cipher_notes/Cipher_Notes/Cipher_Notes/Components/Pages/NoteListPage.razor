@@ -81,9 +81,19 @@
     }
 
     //update note method
-    private void EditNote(int id)
+    private async Task EditNote(int id)
     {
+        try
+        {
+            //navigate to update page
+            Navigation.NavigateTo($"/update/{id}");
 
+
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "BACK");
+        }
     }
 
     //view and decrypt note method

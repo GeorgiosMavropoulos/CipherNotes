@@ -1,49 +1,61 @@
 ﻿@using Cipher_Notes.Models
 @using Cipher_Notes.Services
+@using Cipher_Notes.ViewModels
+@using Cipher_Notes.Models
 
-@page "/note/{Id:int}"
+@page "/update/{Id:int}"
+
 @inject NoteService NoteService
 @inject NavigationManager Navigation
 
+<div class="update_note-page">
+    <h3>@note?.Title</h3>
 
-<div class="view_note-page">
-<h3>@note?.Title</h3>
+    @if (note == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!isUnlocked) //if user didn't provide password
+    {
+        <div class="password-modal">
+            <h4>Decrypt Note</h4>
 
-@if (note == null)
-{
-    <p>Loading...</p>
-}
-else if (!isUnlocked)
-{
-    <div class="password-modal">
-        <h4>Unlock Note</h4>
+            <input type="password"
+                   placeholder="Enter password"
+                   @bind="password" />
 
-        <input type="password"
-               placeholder="Enter password"
-               @bind="password" />
+            <button @onclick="Decrypt">Decrypt</button> <!---decrypt and unloc content btn -->
+            <button @onclick="GoBack">Back</button>
+        </div>
+    }
+    else //display once user unlock's and decrypts note
+    {
+        //display a form with note's info but allow user to edit content
+        <div class="update-form">
+            <input @bind="updatedTitle" />
+            <textarea @bind="updatedContent"></textarea>
+            <button @onclick="Update">Save</button>
+        </div>
+    }
 
-        <button @onclick="Decrypt">Unlock</button>
-        <button @onclick="GoBack">Back</button>
-    </div>
-}
-else
-{
-    <div class="note-content">
-        <p>@decryptedContent</p>
-        <button @onclick="GoBack">Back</button>
-    </div>
-}
+
 </div>
 @code {
+
     [Parameter]
+
     //declare variables
     public int Id { get; set; }
 
     private SecureNotes? note;
 
     private string password = string.Empty;
+    private string updatedTitle = string.Empty;
+    private string updatedContent = string.Empty;
     private string decryptedContent = string.Empty;
     private bool isUnlocked = false;
+
+
 
     protected override async Task OnInitializedAsync() //method to load on page's initialization
     {
@@ -65,7 +77,7 @@ else
 
     }
 
-    //method to decrypt note
+    //method to decrypt content
     private async Task Decrypt()
     {
         //try-catch method
@@ -78,7 +90,8 @@ else
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
 
-        }catch(UnauthorizedAccessException) //return an error message in UI if passwords do not match
+        }
+        catch (UnauthorizedAccessException) //return an error message in UI if passwords do not match
         {
             await App.Current.MainPage.DisplayAlertAsync(
                 "Wrong password",
@@ -88,7 +101,8 @@ else
             //clear password
             password = string.Empty;
 
-        }catch(Exception ex) //return a general exception message
+        }
+        catch (Exception ex) //return a general exception message
         {
             await App.Current.MainPage.DisplayAlertAsync(
                "Error",
@@ -97,7 +111,13 @@ else
         }
     }
 
-    //method to return to the main page
+    //update note method
+    private void Update()
+    {
+        
+    }
+
+    //return to main page method
     private void GoBack()
     {
         Navigation.NavigateTo("/");
