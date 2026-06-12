@@ -12,6 +12,17 @@
             <img src="images/logo.svg" class="logo-img" />
             <div>
                 <h1>Cipher Notes</h1>
+               <!---search bar container-->
+                   <div class="search-bar-container">
+                    <input type="text"
+                           class="search-bar"
+                           placeholder="type note's title..."
+                           @bind="searchQuery"
+                           @bind:event="oninput" />
+                    <button class="search-btn" @onclick="OpenSearchResult">
+                        🔍
+                    </button>
+                   </div>
                 <p>@notes.Count notes encrypted</p>
             </div>
         </div>
@@ -128,7 +139,51 @@
         {
             await App.Current.MainPage.DisplayAlertAsync("alert", "Note has not been deleted","BACK");  //inform user that the note has not been deleted
         }
-        
+
+    }
+
+    //open search result method to open the note if found
+    private async Task OpenSearchResult()
+    {
+        //if search input has been filled
+        try
+        {
+            //return an error message if search input is empty
+            if(!await ValidInputSearchQuery())
+            {
+                await App.Current.MainPage.DisplayAlertAsync("Error", "Please fill out the search input", "BACK");  //return a message if input is empty
+                return;
+            }
+            else //else search note if exists
+            {
+                var match = notes.FirstOrDefault //first or default method to find the first note's title matching with the requested title
+                (n => !string.IsNullOrWhiteSpace(n.Title) && n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+
+                //return an error message if note does not exist
+                if(match == null)
+                {
+                    await App.Current.MainPage.DisplayAlertAsync("Error", "Note does not exist", "BACK");  //return an error message if sth goes wrong
+                    return;
+                }
+                //if note exists, navigate to view notes page
+                Navigation.NavigateTo($"/note/{match.Id}");
+            }
+
+        }catch(Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "BACK");  //return an error message if sth goes wrong
+            return;
+        }
+    }
+
+    //method to validate that search query will not be empty if search btn is being clicked
+    private async Task<bool> ValidInputSearchQuery()
+    {
+        if(string.IsNullOrWhiteSpace(searchQuery))
+        {
+            return false;
+        }
+        return true;
     }
 
     //confirm deletion method
