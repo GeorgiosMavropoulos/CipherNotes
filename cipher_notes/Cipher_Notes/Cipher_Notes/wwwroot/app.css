@@ -542,3 +542,42 @@ body {
     .password-modal button:hover {
         opacity: 0.9;
     }
+
+    /*search bar's icon*/
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 10px 0;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 12px 46px 12px 16px;
+    border-radius: 25px;
+    border: 1px solid #2d3748;
+    background: #1c2128;
+    color: white;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-icon-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0.6;
+    line-height: 0;
+}
+
+    .search-icon-btn:hover {
+        opacity: 1;
+    }}
