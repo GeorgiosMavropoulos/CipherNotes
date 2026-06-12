@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="Cipher_Notes.Tests/Cipher_Notes.Tests.csproj" />
   <Project Path="Cipher_Notes/Cipher_Notes.csproj">
     <Deploy Solution="Debug|*" />
   </Project>

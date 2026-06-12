@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+             <OutputType Condition="'$(TargetFramework)' == 'net10.0'">Library</OutputType>
+  <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
   <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
   <UseMaui>true</UseMaui>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
@@ -76,5 +78,12 @@
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     </ItemGroup>
+
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Compile Remove="Components\**\*.razor" />
+    <Content Remove="Components\**\*.razor" />
+    <None Include="Components\**\*.razor" />
+  </ItemGroup>
 
 </Project>
