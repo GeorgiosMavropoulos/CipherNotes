@@ -13,14 +13,14 @@
             <div>
                 <h1>Cipher Notes</h1>
                <!---search bar container-->
-                   <div class="search-bar-container">
+                <div class="search-wrapper">
                     <input type="text"
                            class="search-bar"
                            placeholder="type note's title..."
                            @bind="searchQuery"
                            @bind:event="oninput" />
-                    <button class="search-btn" @onclick="OpenSearchResult">
-                        🔍
+                    <button class="search-icon-btn" @onclick="OpenSearchResult">
+                        <img src="images/search_bar_icon.svg" width="20" height="20" /> <!--search icon img-->
                     </button>
                    </div>
                 <p>@notes.Count notes encrypted</p>
