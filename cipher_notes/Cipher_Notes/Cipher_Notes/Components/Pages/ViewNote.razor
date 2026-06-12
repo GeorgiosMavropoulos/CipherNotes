@@ -16,7 +16,7 @@
 else if (!isUnlocked)
 {
     <div class="password-modal">
-        <h4>Decrypt Note</h4>
+        <h4>Decrypt   Note</h4>
 
         <input type="password"
                placeholder="Enter password"
@@ -71,6 +71,14 @@ else
         //try-catch method
         try
         {
+            if (!await ValidPassword())
+            {
+                await App.Current.MainPage.DisplayAlertAsync(
+                "Error",
+                "Password field is null",
+                "OK");
+                return;
+            }
             //decrypt content
             //assign method into decryptedContent variable
             decryptedContent = await NoteService.DecryptNote(Id, password);
@@ -95,6 +103,18 @@ else
                ex.Message,
                "OK");
         }
+    }
+
+
+    //validate password won't be null method
+    private async Task<bool> ValidPassword()
+    {
+        //return an error if password is null
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            return false;
+        }
+        return true;
     }
 
     //method to return to the main page
