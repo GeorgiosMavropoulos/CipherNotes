@@ -110,6 +110,11 @@ Cipher_Notes/
 │   ├── CreateNote.razor         # Create a new encrypted note
 │   ├── ViewNote.razor           # Decrypt & view a note
 │   └── UpdateNote.razor         # Decrypt & edit an existing note
+│
+│── Exceptions/(Exception Classes) 
+│   ├── InvalidPasswordException.cs #Custom exception for invalid password
+│   ├── NotFoundException.cs        #Custom exception for not found exception messages
+│   ├── ValidationException.cs      #Custom exception for empty inputs or other validation errors
 ├── wwwroot/
 │   ├── css/app.css              # App styling
 │   └── images/                  # Logo & icons
