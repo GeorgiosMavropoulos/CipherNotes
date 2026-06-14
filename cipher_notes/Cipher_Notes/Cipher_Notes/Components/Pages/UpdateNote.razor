@@ -2,7 +2,7 @@
 @using Cipher_Notes.Services
 @using Cipher_Notes.ViewModels
 @using Cipher_Notes.Models
-
+@using Cipher_Notes.Exceptions
 @page "/update/{Id:int}"
 
 @inject NoteService NoteService
@@ -101,11 +101,11 @@
             isUnlocked = true;
 
         }
-        catch (UnauthorizedAccessException) //return an error message in UI if passwords do not match
+        catch (InvalidPasswordException ex) //return an error message in UI if password is wrong
         {
             await App.Current.MainPage.DisplayAlertAsync(
-                "Wrong password",
-                "Try again",
+                "Authentication Error",
+                ex.Message,
                 "OK");
 
             //clear password
