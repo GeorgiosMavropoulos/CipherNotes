@@ -70,7 +70,7 @@
             await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
             GoBack();//return method
         }
-       
+
 
 
     }
@@ -120,11 +120,18 @@
     {
         try
         {
+            //validate that inputs won't be null using ValidateInputs method from 
+            if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(decryptedContent))
+            {
+                await App.Current.MainPage.DisplayAlertAsync("Validation error", "Please complete all inputs", "OK");
+                return;
+            }
             //if user confirms the update, update the note
             if ( !await ConfirmUpdate())
             {
-                
+
                 await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
+                return;
             }
          
                 await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
@@ -134,10 +141,7 @@
 
 
         }
-        catch(ValidationException ex)
-        {
-            await App.Current.MainPage.DisplayAlertAsync("Validation error", ex.Message, "OK"); //return an error message if content/title is missing
-        }
+       
         catch (NotFoundException ex) //return an error message if selection query failed or note does not exists
         {
             await App.Current.MainPage.DisplayAlertAsync("Not Found", ex.Message, "OK");
