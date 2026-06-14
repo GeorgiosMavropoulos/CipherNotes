@@ -149,12 +149,12 @@ namespace Cipher_Notes.Services
                 );
 
                 return pbkdf2.GetBytes(key_size / 8); // 256 bits = 32 bytes
-
-            } catch (Exception e) 
-            {
-                throw new Exception("Key derivation failed", e);
             }
-           
+            catch (FormatException ex)
+            {
+                throw new ValidationException("Invalid salt format", ex);
+            }
+
 
         }
 
@@ -191,5 +191,8 @@ namespace Cipher_Notes.Services
             return Convert.ToBase64String(iv);
         
         }
+
+
+        //method to return true/false for empty inputs
     }
 }

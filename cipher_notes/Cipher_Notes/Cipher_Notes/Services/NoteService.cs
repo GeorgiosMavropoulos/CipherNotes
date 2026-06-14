@@ -3,7 +3,7 @@ using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-
+using Cipher_Notes.Exceptions;
 namespace Cipher_Notes.Services
 {
     public class NoteService
@@ -70,8 +70,8 @@ namespace Cipher_Notes.Services
                    //return an error message if note does not exist
                    if(note == null)
                    {
-                    throw new Exception("Note does not exist");
-                   }
+                    throw new NotFoundException("Note not found");
+                }
 
                   //return the note
                    return note;
@@ -80,6 +80,7 @@ namespace Cipher_Notes.Services
                 {
                 throw new Exception($"Failed to get note", ex);
                 }
+                
 
         }
 
@@ -95,7 +96,7 @@ namespace Cipher_Notes.Services
                 //return an error message if note does not exists
                 if (note == null)
                 {
-                    throw new Exception("Note does not exist");
+                    throw new NotFoundException("Note not found");
                 }
 
                     //if note exists continue decryption
@@ -109,17 +110,16 @@ namespace Cipher_Notes.Services
                     );
 
             }
-            catch (CryptographicException) //return an error message if password is wrong
+            catch (CryptographicException ex) //return an error message if password is wrong
             {
-                throw new UnauthorizedAccessException("Wrong password");
+                throw new InvalidPasswordException("Wrong password",ex);
             }
 
-            catch (FormatException)
+            catch (FormatException e)
             {
-                throw new UnauthorizedAccessException("Wrong password");
+                throw new ValidationException("Decryption error", e);
             }
-
-
+           
 
 
         }
@@ -150,9 +150,9 @@ namespace Cipher_Notes.Services
                    );
 
                 }
-                catch 
+                catch (Exception ex)
                 {
-                    throw new Exception("Incorrect password");
+                    throw new InvalidPasswordException("Incorrect password", ex );
                 }
 
                 //encrypt updated content
@@ -192,7 +192,7 @@ namespace Cipher_Notes.Services
                 //return an error message if note does not exist
                 if(retrieve_Note == null)
                 {
-                    throw new Exception("Note not found");
+                    throw new NotFoundException("Note not found");
                 }
                 //delete note if exists
                 await databaseService.Delete(id);

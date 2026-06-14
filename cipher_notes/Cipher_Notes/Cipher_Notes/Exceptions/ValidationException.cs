@@ -8,5 +8,11 @@ namespace Cipher_Notes.Exceptions
     public class ValidationException: Exception
     {
         public ValidationException(string message) : base(message) { }
+
+        //+ inner exception for debugging
+        public ValidationException(string message, Exception innerException)
+        : base(message, innerException)
+        {
+        }
     }
 }
