@@ -76,7 +76,7 @@ namespace Cipher_Notes.Services
                    if(note == null)
                    {
                     throw new NotFoundException("Note not found");
-                }
+                   }
 
                   //return the note
                    return note;
@@ -115,7 +115,7 @@ namespace Cipher_Notes.Services
                     );
 
             }
-            catch (CryptographicException ex) //return an error message if password is wrong
+            catch (InvalidPasswordException ex) //return an error message if password is wrong
             {
                 throw new InvalidPasswordException("Wrong password",ex);
             }
@@ -128,7 +128,6 @@ namespace Cipher_Notes.Services
 
 
         }
-
 
             //update note method
             public async Task UpdateNote(int id,string title, string content, string password)
@@ -144,8 +143,7 @@ namespace Cipher_Notes.Services
 
 
                 //validate password
-                try
-                {
+               
                     var decrypted_note = encryptionService.DecryptContent
                    (
                        existingNote.Encrypted_content,
@@ -154,39 +152,44 @@ namespace Cipher_Notes.Services
                        existingNote.IV
                    );
 
+
+
+
+                    //return an error message if content or title is missing
+                    ValidateInputs(content, title);
+
+                    //encrypt updated content
+                    var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
+
+                    //update note
+                    existingNote.Title = title;
+                    existingNote.Encrypted_content = cipher;
+                    existingNote.Salt = salt;
+                    existingNote.IV = iv;
+                    existingNote.Updated_at = DateTime.Now;
+
+                    //send query in the DB
+                    await databaseService.Update(existingNote);
+
+                }
+                catch(ValidationException) //return an error message if use has not completed all the inputs in the form
+                {
+                    throw;
+            }
+                catch (InvalidPasswordException) //return an error message if password is wrong
+                {
+                throw;
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidPasswordException("Incorrect password", ex );
+                    //return error message
+                    throw new Exception(ex.Message, ex);
+
                 }
-
-
-                //return an error message if content or title is missing
-                ValidateInputs(content, title);
-
-                //encrypt updated content
-                var (cipher, salt, iv) = encryptionService.EncryptNote(content,password);
-
-                //update note
-                existingNote.Title = title;
-                existingNote.Encrypted_content = cipher;
-                existingNote.Salt = salt;
-                existingNote.IV = iv;
-                existingNote.Updated_at = DateTime.Now;       
-                
-                //send query in the DB
-                await databaseService.Update(existingNote);
-
-            }
-            catch (Exception ex) 
-            {
-                //return error message
-                throw new Exception(ex.Message, ex);
-            
             }
                    
 
-             }
+             
 
            //delete note method
            public async Task Delete(int id)
@@ -215,9 +218,7 @@ namespace Cipher_Notes.Services
             }
                
             
-            
-
-
+           
 
         }
 

@@ -51,8 +51,13 @@
         //try-catch to handle errors
         try
         {
-          
-                //validate that password match
+            //if confirm password is null return an error message
+            if(string.IsNullOrEmpty(confirmPassword))
+            {
+                await Application.Current.MainPage.DisplayAlertAsync("Confirmation Error","Please confirm password","OK");
+                return;
+            }
+            //validate that password match
                 if (await PasswordsMatch())
                 {
                     //create note

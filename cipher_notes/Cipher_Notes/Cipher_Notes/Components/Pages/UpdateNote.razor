@@ -121,16 +121,16 @@
         try
         {
             //if user confirms the update, update the note
-            if (await ConfirmUpdate())
+            if ( !await ConfirmUpdate())
             {
+                
+                await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
+            }
+         
                 await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
                 //return an success message
                 await App.Current.MainPage.DisplayAlertAsync("Success", "Note has been updated", "OK");
-            }
-            else
-            {
-                await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
-            }
+               
 
 
         }
