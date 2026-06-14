@@ -20,7 +20,6 @@ namespace Cipher_Notes.Services
         
         }
 
-
         //encrypt note method
         public (string CipherText, string Salt, string IV) EncryptNote(string content, string password)
         {
@@ -31,7 +30,19 @@ namespace Cipher_Notes.Services
            //derive key
            byte[] key = DeriveKey(password, salt);
 
-            //try-catch method to handle errors
+            string cipherText = Encrypt(content,key, iv);
+
+            //return encrypted string
+            return (cipherText, salt, iv);
+
+
+            
+        }
+
+        //method to ecnrypt the text
+        public string Encrypt(string content, byte[] key, string iv)
+        {
+            //try catch method to handle errors
             try
             {
                 //use AES encryption
@@ -52,35 +63,33 @@ namespace Cipher_Notes.Services
                     //encrypt and save content
                     writer.Write(content);
                 }
-                
-                
-               
 
-                //declare cipher text variable
-                string CipherText = Convert.ToBase64String(ms.ToArray());
+                //convert encrypted bytes to string
+                return Convert.ToBase64String(ms.ToArray());
 
-                //return salt,iv and encrypted content
-                return (CipherText, salt, iv);
             }
-            catch(CryptographicException e)
+            catch (Exception e)
             {
                 throw new InvalidOperationException("Content encryption failed", e);
             }
 
-
-
-            
         }
 
         //decrypt note method
         public String DecryptContent(string encrypted_content, string password, string salt, string iv)
         {
+            //derive key from password + salt
+            byte[] key = DeriveKey(password, salt);
+           
+            return Decrypt(encrypted_content, key, iv); //return decrypted content
+        }
+
+        //method to create decryption process
+        public string Decrypt(string encrypted_content, byte[] key, string iv)
+        {
             //try-catch method to handle unexpected errors
             try
             {
-
-                //derive key from password + salt
-                byte[] key = DeriveKey(password, salt);
 
                 //convert iv + cipher text from Base64
                 byte[] ivBytes = Convert.FromBase64String(iv);
@@ -107,11 +116,10 @@ namespace Cipher_Notes.Services
 
                 return plain_text; //return plain text to user
             }
-            catch(CryptographicException e)
+            catch (CryptographicException e)
             {
                 throw new InvalidOperationException("Wrong password or corrupted data.Try again", e);
             }
-
         }
 
         //derive key method
