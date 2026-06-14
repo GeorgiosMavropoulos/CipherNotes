@@ -84,15 +84,7 @@
         //try-catch method
         try
         {
-            //if password is null return an error message
-            if (!await ValidPassword())
-            {
-                await App.Current.MainPage.DisplayAlertAsync(
-               "Error",
-               "Password field is null",
-               "OK");
-                return;
-            }
+          
             //decrypt content
             //assign method into decryptedContent variable
             decryptedContent = await NoteService.DecryptNote(Id, password);
@@ -100,6 +92,11 @@
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
 
+        }
+        catch (ValidationException ex) //return an error message if password is null
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password is null
+            return;
         }
         catch (InvalidPasswordException ex) //return an error message in UI if password is wrong
         {
@@ -110,7 +107,7 @@
 
             //clear password
             password = string.Empty;
-
+            return;
         }
         catch (Exception ex) //return a general exception message
         {
@@ -147,24 +144,17 @@
                 return;
             }
 
+        
 
-
-        }catch(Exception ex)
+        }
+         catch(Exception ex)
         {
             await App.Current.MainPage.DisplayAlertAsync("Error", "Cannot update note", "OK");
+            return;
         }
     }
 
-    //validate password won't be null method
-    private async Task <bool> ValidPassword()
-    {
-        //return an error if password is null
-        if(string.IsNullOrWhiteSpace(password))
-        {
-            return false;
-        }
-        return true;
-    }
+   
 
     //validate that inputs won't be null
     private async Task <bool> ValidNoteInputs()

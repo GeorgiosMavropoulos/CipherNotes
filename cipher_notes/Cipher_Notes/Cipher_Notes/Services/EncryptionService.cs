@@ -79,6 +79,11 @@ namespace Cipher_Notes.Services
         //decrypt note method
         public String DecryptContent(string encrypted_content, string password, string salt, string iv)
         {
+            //return exception if password is null
+            if(string.IsNullOrEmpty(password))
+            {
+                throw new ValidationException("Password cannot be empty");
+            }
             //derive key from password + salt
             byte[] key = DeriveKey(password, salt);
            
