@@ -1,5 +1,6 @@
 ﻿@using Cipher_Notes.Models
 @using Cipher_Notes.Services
+@using Cipher_Notes.Exceptions
 
 @page "/"
 @inject NoteService NoteService
@@ -149,31 +150,42 @@
         try
         {
             //return an error message if search input is empty
-            if(!await ValidInputSearchQuery())
+            if (!await ValidInputSearchQuery())
             {
                 await App.Current.MainPage.DisplayAlertAsync("Error", "Please fill out the search input", "BACK");  //return a message if input is empty
                 return;
             }
-            else //else search note if exists
+            else if (!await SearchNote()) //else search note if exists
             {
-                var match = notes.FirstOrDefault //first or default method to find the first note's title matching with the requested title
-                (n => !string.IsNullOrWhiteSpace(n.Title) && n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
-
-                //return an error message if note does not exist
-                if(match == null)
-                {
+                
                     await App.Current.MainPage.DisplayAlertAsync("Error", "Note does not exist", "BACK");  //return an error message if sth goes wrong
                     return;
-                }
-                //if note exists, navigate to view notes page
-                Navigation.NavigateTo($"/note/{match.Id}");
+              
+              
             }
+        }
 
-        }catch(Exception ex)
+        catch (Exception ex)
         {
             await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "BACK");  //return an error message if sth goes wrong
             return;
         }
+    }
+
+    //method to search if note exists
+    private async Task<bool> SearchNote()
+    {
+        //search note via first or default method
+        var match = notes.FirstOrDefault(n => !string.IsNullOrWhiteSpace(n.Title) && n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+
+        //return false if note does not exist
+        if(match == null)
+        {
+            return false;
+        }
+        //if note exists, navigate to view notes page
+        Navigation.NavigateTo($"/note/{match.Id}");
+        return true;
     }
 
     //method to validate that search query will not be empty if search btn is being clicked
