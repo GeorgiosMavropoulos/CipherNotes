@@ -1,5 +1,6 @@
 ﻿@using Cipher_Notes.Models
 @using Cipher_Notes.Services
+@using Cipher_Notes.Exceptions
 
 @page "/note/{Id:int}"
 @inject NoteService NoteService
@@ -86,22 +87,14 @@ else
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
 
-        }catch(UnauthorizedAccessException) //return an error message in UI if passwords do not match
+        }
+        catch (InvalidPasswordException ex) //return a general exception message
         {
             await App.Current.MainPage.DisplayAlertAsync(
-                "Wrong password",
-                "Try again",
-                "OK");
-
-            //clear password
-            password = string.Empty;
-
-        }catch(Exception ex) //return a general exception message
-        {
-            await App.Current.MainPage.DisplayAlertAsync(
-               "Error",
+               "Authentication Error",
                ex.Message,
                "OK");
+            password = string.Empty;
         }
     }
 

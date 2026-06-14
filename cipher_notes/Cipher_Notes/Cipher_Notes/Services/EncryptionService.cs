@@ -1,4 +1,5 @@
 ﻿
+using Cipher_Notes.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -116,9 +117,9 @@ namespace Cipher_Notes.Services
 
                 return plain_text; //return plain text to user
             }
-            catch (CryptographicException e)
+            catch (CryptographicException ex)
             {
-                throw new InvalidOperationException("Wrong password or corrupted data.Try again", e);
+                 throw new InvalidPasswordException(ex);
             }
         }
 
