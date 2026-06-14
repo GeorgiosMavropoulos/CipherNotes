@@ -84,7 +84,7 @@
         //try-catch method
         try
         {
-          
+
             //decrypt content
             //assign method into decryptedContent variable
             decryptedContent = await NoteService.DecryptNote(Id, password);
@@ -123,31 +123,29 @@
     {
         try
         {
-            //return an error if any input is null
-            if (await ValidNoteInputs())
+            //if user confirms the update, update the note
+            if (await ConfirmUpdate())
             {
-                //if user confirms the update, update the note
-                if (await ConfirmUpdate())
-                {
-                    await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
-                    //return an success message
-                    await App.Current.MainPage.DisplayAlertAsync("Success", "Note has been updated", "OK");
-                }
-                else
-                {
-                    await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
-                }
+                await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
+                //return an success message
+                await App.Current.MainPage.DisplayAlertAsync("Success", "Note has been updated", "OK");
             }
             else
             {
-                await App.Current.MainPage.DisplayAlertAsync("Error", "Please complete all inputs", "OK"); //return an error message if any input is null
-                return;
+                await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
             }
 
-        
 
         }
-         catch(Exception ex)
+        catch(ValidationException ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Validation error", ex.Message, "OK"); //return an error message if content/title is missing
+        }
+        catch (NotFoundException ex) //return an error message if selection query failed or note does not exists
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Not Found", ex.Message, "OK");
+        }
+        catch(Exception ex)
         {
             await App.Current.MainPage.DisplayAlertAsync("Error", "Cannot update note", "OK");
             return;
@@ -156,19 +154,6 @@
 
    
 
-    //validate that inputs won't be null
-    private async Task <bool> ValidNoteInputs()
-    {
-        //return an error  if title or content is null
-        if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(decryptedContent))
-        {
-           
-            return false;
-        }
-       
-
-        return true;
-    }
 
     //prompt user to confirm the update
     private async Task<bool> ConfirmUpdate()

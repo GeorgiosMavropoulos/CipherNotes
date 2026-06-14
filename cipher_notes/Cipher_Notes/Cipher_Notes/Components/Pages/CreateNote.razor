@@ -48,14 +48,10 @@
     private async Task SaveNote()
     {
 
-
-
         //try-catch to handle errors
         try
         {
-
-            if (await ValidInput()) //if input is valid validate that passwords match
-            {
+          
                 //validate that password match
                 if (await PasswordsMatch())
                 {
@@ -72,16 +68,12 @@
                 }
 
 
-            }
-            else
-            {
-                await Application.Current.MainPage.DisplayAlertAsync("Error", "Please fill out all inputs", "OK");
-            }
+            
         }
 
         catch (ValidationException ex) //return an error message if password is null
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password is null
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password, content or title is null
             return;
         }
 
@@ -93,20 +85,7 @@
 
     }
 
-    //validate that no input is null
-    private async Task<bool> ValidInput()
-    {
-        //return an error message for null inputs
-        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
-        {
 
-            return false;
-        }
-
-
-
-        return true;
-    }
 
     //method to validate that passwords match
     private async Task<bool> PasswordsMatch()

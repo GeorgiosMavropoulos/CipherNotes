@@ -22,6 +22,11 @@ namespace Cipher_Notes.Services
         {
             try
             {
+                //return an error message if content or title is missing
+
+                ValidateInputs(content, title);
+
+                //encrypt note's content
                 var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
 
                 var note = new SecureNotes
@@ -155,6 +160,10 @@ namespace Cipher_Notes.Services
                     throw new InvalidPasswordException("Incorrect password", ex );
                 }
 
+
+                //return an error message if content or title is missing
+                ValidateInputs(content, title);
+
                 //encrypt updated content
                 var (cipher, salt, iv) = encryptionService.EncryptNote(content,password);
 
@@ -210,6 +219,21 @@ namespace Cipher_Notes.Services
 
 
 
+        }
+
+        //method to return an error message if content or title is missing
+        private void ValidateInputs(string content, string title)
+        {
+            if(string.IsNullOrWhiteSpace(title))
+            {
+                throw new ValidationException("Title is empty");
+                
+            }
+            else if(string.IsNullOrWhiteSpace(content))
+            {
+                throw new ValidationException("Content is empty");
+            }
+           
         }
         }
     }

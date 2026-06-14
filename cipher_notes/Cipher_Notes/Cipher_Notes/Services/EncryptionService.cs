@@ -52,6 +52,7 @@ namespace Cipher_Notes.Services
             //try catch method to handle errors
             try
             {
+
                 //use AES encryption
                 using var aes = Aes.Create();
                 aes.Key = key;
@@ -193,6 +194,5 @@ namespace Cipher_Notes.Services
         }
 
 
-        //method to return true/false for empty inputs
     }
 }

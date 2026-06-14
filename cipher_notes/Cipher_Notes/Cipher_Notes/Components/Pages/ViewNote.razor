@@ -48,21 +48,20 @@ else
 
     protected override async Task OnInitializedAsync() //method to load on page's initialization
     {
-        note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
 
-        //return to the main page is note is null
-        if (note is null)
+        //try catch method to return exceptions
+        try
+        {
+            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+
+        }catch(NotFoundException ex)
         {
             await App.Current.MainPage.DisplayAlertAsync( //display an error message if note does not exist
                 "Error",
-                "Note not found.",
+                ex.Message,
                 "OK");
-
-            Navigation.NavigateTo("/", true);
-            return;
+            GoBack();//method to return to the main menu
         }
-
-
 
     }
 
@@ -72,14 +71,7 @@ else
         //try-catch method
         try
         {
-            if (!await ValidPassword())
-            {
-                await App.Current.MainPage.DisplayAlertAsync(
-                "Error",
-                "Password field is null",
-                "OK");
-                return;
-            }
+          
             //decrypt content
             //assign method into decryptedContent variable
             decryptedContent = await NoteService.DecryptNote(Id, password);
@@ -88,7 +80,11 @@ else
             isUnlocked = true;
 
         }
-        catch (InvalidPasswordException ex) //return a general exception message
+        catch(ValidationException ex)
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Input error", ex.Message, "OK");
+        }
+        catch (InvalidPasswordException ex) //return an exception message if password is null
         {
             await App.Current.MainPage.DisplayAlertAsync(
                "Authentication Error",
@@ -96,18 +92,6 @@ else
                "OK");
             password = string.Empty;
         }
-    }
-
-
-    //validate password won't be null method
-    private async Task<bool> ValidPassword()
-    {
-        //return an error if password is null
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            return false;
-        }
-        return true;
     }
 
     //method to return to the main page
