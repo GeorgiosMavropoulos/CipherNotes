@@ -24,6 +24,12 @@ namespace Cipher_Notes.Services
         //encrypt note method
         public (string CipherText, string Salt, string IV) EncryptNote(string content, string password)
         {
+            //return exception if password is null
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ValidationException("Password cannot be empty");
+            }
+
             string salt = GenerateSalt(); //generate salt using GenerateSalt() method
 
             string iv = GenerateIV(); //generate IV using GenerateIV method

@@ -2,7 +2,7 @@
 @using Cipher_Notes.Services
 @using Cipher_Notes.ViewModels
 @using Cipher_Notes.Models
-
+@using Cipher_Notes.Exceptions
 @page "/create"
 @inject NoteService NoteService
 @inject NavigationManager Navigation
@@ -54,10 +54,10 @@
         try
         {
 
-            if(await ValidInput()) //if input is valid validate that passwords match
+            if (await ValidInput()) //if input is valid validate that passwords match
             {
                 //validate that password match
-                if(await PasswordsMatch())
+                if (await PasswordsMatch())
                 {
                     //create note
                     await NoteService.CreateNote(title, content, password);
@@ -71,16 +71,23 @@
                     await Application.Current.MainPage.DisplayAlertAsync("Error", "Passwords do not match", "OK");
                 }
 
-               
+
             }
             else
             {
                 await Application.Current.MainPage.DisplayAlertAsync("Error", "Please fill out all inputs", "OK");
             }
+        }
 
-        }catch(Exception ex) //throw a general exception message if sth goes wrong
+        catch (ValidationException ex) //return an error message if password is null
         {
-            await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password is null
+            return;
+        }
+
+        catch (Exception ex) //throw a general exception message if sth goes wrong
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
         }
 
 
@@ -90,7 +97,7 @@
     private async Task<bool> ValidInput()
     {
         //return an error message for null inputs
-        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
         {
 
             return false;
