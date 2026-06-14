@@ -60,20 +60,17 @@
 
     protected override async Task OnInitializedAsync() //method to load on page's initialization
     {
-        note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
-
-        //return to the main page is note is null
-        if (note is null)
+        //try-catch method to catch exceptions and return error message
+        try
         {
-            await App.Current.MainPage.DisplayAlertAsync( //display an error message if note does not exist
-                "Error",
-                "Note not found.",
-                "OK");
+            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
 
-            Navigation.NavigateTo("/", true);
-            return;
+        }catch(NotFoundException ex) //return an error message if note does not exist
+        {
+            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
+            GoBack();//return method
         }
-
+       
 
 
     }
