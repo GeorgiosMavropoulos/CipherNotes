@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Cipher_Notes.Tests/Cipher_Notes.Tests.csproj" Id="a6c8fa41-0179-456a-8f82-5cffdbacbffd" />
   <Project Path="Cipher_Notes/Cipher_Notes.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
