@@ -104,5 +104,29 @@ namespace Cipher_Notes.Tests
             //validate that content is equals to decrypted content
             Assert.Equal(content, decrypted_content);
         }
+
+        //test that DecryptNote method will return a ValidationException error message (Password cannot be empty) if password is null
+        [Fact]
+        public void Test_Decryption_Will_Return_Validation_Exception_If_Password_Null()
+        {
+            //Arrange
+            var content = "text";
+            var password = "1234";
+            var decrypted_content = "";
+            var decrypt_pass = string.Empty;
+
+            //Act
+            //Firstly content is being encrypted
+            var (cipher, salt, iv) = _encryptionService.EncryptNote(content, password);
+
+            //then content is being decrypted
+            var ex = Assert.Throws<ValidationException>(() => _encryptionService.DecryptContent(cipher, decrypt_pass, salt, iv));
+
+            //Assert
+            //validate that the proper exception message will be returned
+            //Assert
+            Assert.Equal("Password cannot be empty", ex.Message);
+
+        }
     }
 }
