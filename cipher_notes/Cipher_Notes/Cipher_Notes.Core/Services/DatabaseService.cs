@@ -1,11 +1,15 @@
 ﻿
-using Cipher_Notes.Models;
+using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.Threading;
+using System.Linq;
 
-namespace Cipher_Notes.Services
+namespace Cipher_Notes.Core.Services
 {
     public class DatabaseService
     {
@@ -45,15 +49,10 @@ namespace Cipher_Notes.Services
         }
 
         //declare constructor!
-        public DatabaseService()
+        public DatabaseService(string dbPath)
         {
-            //create the connection in cosntructor since _connection variable is readonly
-
-            if (_connection != null) return; //if connection is active, the method does not initialize it again
-
-            var db_path = Path.Combine(FileSystem.AppDataDirectory, db); //define db's file path
-
-            _connection = new SQLiteAsyncConnection(db_path); //initialize the connection
+           
+            _connection = new SQLiteAsyncConnection(dbPath); //initialize the connection
         }
 
 
