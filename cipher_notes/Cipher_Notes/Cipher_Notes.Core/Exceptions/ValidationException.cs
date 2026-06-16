@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cipher_Notes.Exceptions
+namespace Cipher_Notes.Core.Exceptions
 {
     //validation exception class, to return exception message for all validation logic, e.g empty password for decryption
     public class ValidationException: Exception

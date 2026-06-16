@@ -1,5 +1,7 @@
 ﻿using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
+
+using Cipher_Notes.Core.Exceptions;
 namespace Cipher_Notes.Tests
 {
     public class TestEncryptionService
@@ -30,6 +32,26 @@ namespace Cipher_Notes.Tests
             Assert.NotEqual(cipherText, content);//test that cipher text and content is not equal. This means that content has been encrypted
 
 
+        }
+
+        //test that the proper error message will return if cipherText, title, or pass is null
+        [Fact]
+        public void Test_EmptyPassword_Throws_ValidationException()
+        {
+            //Arange 
+            var content = "pass is null";
+            var title = "title";
+            var password = string.Empty;
+
+            //Act
+           
+            //act that asserts whether the exception message will return or not
+            var ex = Assert.Throws<ValidationException> (() => _encryptionService.EncryptNote(content, password));
+
+
+
+            //Assert
+            Assert.Equal("Password cannot be empty", ex.Message);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cipher_Notes.Exceptions
+namespace Cipher_Notes.Core.Exceptions
 {
     //this class will be used to create invalid password exception message
     public class InvalidPasswordException : Exception

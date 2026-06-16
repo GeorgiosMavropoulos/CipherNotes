@@ -1,5 +1,5 @@
 ﻿
-using Cipher_Notes.Exceptions;
+using Cipher_Notes.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
