@@ -13,6 +13,9 @@ namespace Cipher_Notes.Tests
         //declare a constructor to reset _encryptionService data 
         public TestEncryptionService() => _encryptionService = new EncryptionService();
 
+
+        //-----TESTS FOR ENCRYPTION SERVICE---//
+
         //test encryption and decryption without errors
         [Fact]
         public void EncryptNote_ValidInput_ReturnsEncryptedData()
@@ -74,6 +77,32 @@ namespace Cipher_Notes.Tests
             Assert.NotEqual(text_1.Salt, text_2.Salt); //verify that text's 1 salt is not equal to the second's one
             Assert.NotEqual(text_1.IV, text_2.IV); //verify that text's 1 initialization vector is not equal to the second's one
             Assert.NotEqual(text_1.CipherText, text_2.CipherText);
+        }
+
+        //-----TESTS FOR DECRYPTION SERVICE---//
+
+        //this test validates that the encrypted content EncryptNote method encrypts, will be decrypted successfully. 
+        //I validate that the original content before encryption is identical to the decrypted content
+        [Fact]
+        public void Test_Decrypted_Content_Will_Be_Equals_To_The_Original_Content_Before_Being_Encrypted()
+        {
+            //Arrange
+            var content = "text";
+            var password = "1234";
+            var decrypted_content = "";
+            var decrypt_pass = "1234";
+
+            //Act
+            //Firstly content is being encrypted
+            var (cipher,salt,iv) = _encryptionService.EncryptNote(content, password);
+
+            //then content is being decrypted
+            decrypted_content = _encryptionService.DecryptContent(cipher, decrypt_pass, salt, iv);
+
+
+            //Assert
+            //validate that content is equals to decrypted content
+            Assert.Equal(content, decrypted_content);
         }
     }
 }
