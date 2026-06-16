@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Cipher_Notes.Services
+
+namespace Cipher_Notes.Core.Services
 {
     public class EncryptionService
     {

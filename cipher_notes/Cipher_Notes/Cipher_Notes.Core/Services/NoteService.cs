@@ -1,10 +1,10 @@
-﻿using Cipher_Notes.Models;
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Cipher_Notes.Exceptions;
-namespace Cipher_Notes.Services
+using Cipher_Notes.Core.Models;
+namespace Cipher_Notes.Core.Services
 {
     public class NoteService
     {

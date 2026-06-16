@@ -85,5 +85,7 @@
     <Content Remove="Components\**\*.razor" />
     <None Include="Components\**\*.razor" />
   </ItemGroup>
-
+<ItemGroup>
+    <ProjectReference Include="..\Cipher_Notes.Core\Cipher_Notes.Core.csproj" />
+</ItemGroup>
 </Project>

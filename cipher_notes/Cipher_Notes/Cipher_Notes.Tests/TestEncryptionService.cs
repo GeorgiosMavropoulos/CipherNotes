@@ -1,4 +1,5 @@
-﻿using Cipher_Notes.Services;
+﻿using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
 namespace Cipher_Notes.Tests
 {
     public class TestEncryptionService
@@ -12,7 +13,7 @@ namespace Cipher_Notes.Tests
 
         //test encryption and decryption without errors
         [Fact]
-        public void Test_Encryption_Decryption_Without_Errors()
+        public void Test_Encryption_Without_Errors()
         {
             //Arrange
             var content = "This is to test encryption";

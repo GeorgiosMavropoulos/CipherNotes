@@ -1,5 +1,5 @@
-﻿using Cipher_Notes.Models;
-using Cipher_Notes.Services;
+﻿using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;

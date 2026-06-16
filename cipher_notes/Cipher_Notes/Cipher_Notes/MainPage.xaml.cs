@@ -1,4 +1,4 @@
-﻿using Cipher_Notes.Services;
+﻿using Cipher_Notes.Core.Services;
 
 namespace Cipher_Notes
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SQLite;
 
-namespace Cipher_Notes.Models
+namespace Cipher_Notes.Core.Models
 {
     [Table("SecureNotes")]
     public class SecureNotes
