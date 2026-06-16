@@ -15,11 +15,11 @@ namespace Cipher_Notes.Tests
 
         //test encryption and decryption without errors
         [Fact]
-        public void Test_Encryption_Without_Errors()
+        public void EncryptNote_ValidInput_ReturnsEncryptedData()
         {
             //Arrange
             var content = "This is to test encryption";
-            var title = "Test title";
+            
             var password = "password";
 
             //ACT
@@ -27,20 +27,21 @@ namespace Cipher_Notes.Tests
 
             //Assert
             Assert.NotNull(cipherText); //test that cipher text is not null
-            Assert.NotNull(title); //test that title is not null
+            Assert.NotNull(salt);// test that salt is not null
+            Assert.NotNull(iv); //test that iv is not null
             Assert.NotNull(password); //test that password is not null
             Assert.NotEqual(cipherText, content);//test that cipher text and content is not equal. This means that content has been encrypted
 
 
         }
 
-        //test that the proper error message will return if cipherText, title, or pass is null
+        //test that the proper error message will return if pass is null
         [Fact]
         public void Test_EmptyPassword_Throws_ValidationException()
         {
             //Arange 
             var content = "pass is null";
-            var title = "title";
+           
             var password = string.Empty;
 
             //Act
@@ -52,6 +53,27 @@ namespace Cipher_Notes.Tests
 
             //Assert
             Assert.Equal("Password cannot be empty", ex.Message);
+        }
+
+        // test that when 2 notes or more are being encrypted, the method returns different cipher texts even if content is the same
+        [Fact]
+        public void Test_Encrypt_Note_Randomness()
+        {
+            //Arrange
+            var content_1 = "text";
+            var content_2 = "text";
+            var password_1 = "1234";
+            var password_2 = "1234";
+
+            //Act
+            //create 2 encryption objects and encrypt 2 different texts
+            var text_1 = _encryptionService.EncryptNote(content_1, password_1); //text 1
+            var text_2 = _encryptionService.EncryptNote(content_2, password_2); //text 2
+
+            //Asert
+            Assert.NotEqual(text_1.Salt, text_2.Salt); //verify that text's 1 salt is not equal to the second's one
+            Assert.NotEqual(text_1.IV, text_2.IV); //verify that text's 1 initialization vector is not equal to the second's one
+            Assert.NotEqual(text_1.CipherText, text_2.CipherText);
         }
     }
 }
