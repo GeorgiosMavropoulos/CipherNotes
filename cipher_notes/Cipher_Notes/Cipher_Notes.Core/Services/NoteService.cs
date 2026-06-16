@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Cipher_Notes.Exceptions;
+using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Models;
 namespace Cipher_Notes.Core.Services
 {
