@@ -183,14 +183,22 @@ namespace Cipher_Notes.Core.Services
         //generate initialization vector method
         public String GenerateIV() 
         {
-            byte[] iv = new byte[16]; //AES ENCRYPTION bytes
-            
-            //using random number generator to generate iv
-            using (var rng = RandomNumberGenerator.Create())
+            try
             {
-                rng.GetBytes(iv); 
+                byte[] iv = new byte[16]; //AES ENCRYPTION bytes
+
+                //using random number generator to generate iv
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    rng.GetBytes(iv);
+                }
+                return Convert.ToBase64String(iv);
             }
-            return Convert.ToBase64String(iv);
+            catch(CryptographicException e)
+            {
+                throw new InvalidOperationException("IV generation failed", e);
+            }
+            
         
         }
 
