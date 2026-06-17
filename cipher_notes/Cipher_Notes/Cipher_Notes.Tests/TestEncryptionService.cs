@@ -128,5 +128,28 @@ namespace Cipher_Notes.Tests
             Assert.Equal("Password cannot be empty", ex.Message);
 
         }
+
+        //test that Decrypt note method will return an invalid password exception if password is invalid
+        [Fact]
+        public void Test_Decryption_Will_Return_InvalidPasswordException_If_Password_Is_Wrong()
+        {
+            //Arrange
+            var content = "text";
+            var password = "1234"; //declare encryption's password
+
+            var decrypted_content = string.Empty;
+            var decrypt_pass = "wrong password"; //declare a falsed password for decryption's process
+
+            //Act
+            //Firstly content is being encrypted
+            var (cipher, salt, iv) = _encryptionService.EncryptNote(content, password);
+
+            //then content is being decrypted
+            var ex = Assert.Throws<InvalidPasswordException>(()=> _encryptionService.DecryptContent(cipher, decrypt_pass, salt, iv));
+
+            //Assert
+            //error message must be equals to 'Wrong password'
+            Assert.Equal("Wrong password", ex.Message);
+        }
     }
 }
