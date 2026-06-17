@@ -151,5 +151,28 @@ namespace Cipher_Notes.Tests
             //error message must be equals to 'Wrong password'
             Assert.Equal("Wrong password", ex.Message);
         }
+
+
+        //test that DeriveKey method will return the same output if salt and password are equal. If not, encrypted content won't be able to get decrypted 
+        //even using the same pass
+        [Fact]
+        public void Test_DeriveKey_Will_Return_The_Same_Key_If_The_Same_Pass_And_Salt_Are_Being_Provided()
+        {
+            
+            //Arrange
+            var password = "1234";
+            var salt = _encryptionService.GenerateSalt(); //generate salt
+
+            //Act
+            //create two keys from the same salt and password
+            var key_1 = _encryptionService.DeriveKey(password, salt);
+            var key_2 = _encryptionService.DeriveKey(password, salt);
+
+            //Assert
+            //verify that boths keys are equal
+            Assert.Equal(key_1, key_2);
+
+
+        }
     }
 }
