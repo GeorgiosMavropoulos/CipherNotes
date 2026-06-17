@@ -191,5 +191,29 @@ namespace Cipher_Notes.Tests
             //ValidationException should return the message: Invalid salt format
             Assert.Equal("Invalid salt format", exception.Message);
         }
+
+
+        //test that GenerateSalt returns a 16 char sequence
+        [Fact]
+        public void Test_GenerateSalt_Returns_A_16_Char_Sequence()
+        {
+            //Arrange
+            byte[] decoded_salt;
+
+            //Act
+            //use the salt variable to call the GenerateSalt method
+            var salt = _encryptionService.GenerateSalt();
+
+            //Assert
+            //verify that salt is not null
+            Assert.NotNull(salt);
+
+            //decode salt and store it in decrypted_salt variable
+            decoded_salt = Convert.FromBase64String(salt);
+
+            //Assert that decoded_salt's length is equals to 16 
+            Assert.Equal(16, decoded_salt.Length);
+        }
+
     }
 }
