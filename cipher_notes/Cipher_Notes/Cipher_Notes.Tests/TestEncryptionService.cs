@@ -128,5 +128,7 @@ namespace Cipher_Notes.Tests
             Assert.Equal("Password cannot be empty", ex.Message);
 
         }
+
+        //test that Decrypt note method will return an invalid password exception if password is invalid
     }
 }
