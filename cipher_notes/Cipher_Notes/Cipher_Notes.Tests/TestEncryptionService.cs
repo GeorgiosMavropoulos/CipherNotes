@@ -174,5 +174,22 @@ namespace Cipher_Notes.Tests
 
 
         }
+
+        //test that DeriveKey method will return a ValidationException error if a custom written salt has been used as a salt
+        [Fact]
+        public void Test_DeriveKey_Will_Return_Validation_Exception_If_A_Custom_Written_Salt_Has_Been_Used()
+        {
+            //Arrange
+            var password = "1234";
+            var salt = "this is an invalid salt, lol";
+
+            //Act
+            //Create a variable using EncryptionService's method DeriveKey. I will add the custom written salt
+            var exception = Assert.Throws<ValidationException>(()=>_encryptionService.DeriveKey(password, salt));
+
+            //Assert
+            //ValidationException should return the message: Invalid salt format
+            Assert.Equal("Invalid salt format", exception.Message);
+        }
     }
 }
