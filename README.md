@@ -21,7 +21,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 ---
 
 ## 🏗️ Architecture
-
+```
 ┌─────────────────────────────────────────┐
 │  Cipher_Notes  (MAUI Blazor Hybrid app)  │
 │  Razor Pages · ViewModels · DI setup     │
@@ -41,7 +41,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 │  Cipher_Notes.Tests  (xUnit)              │
 │  references Cipher_Notes.Core directly    │
 └─────────────────────────────────────────┘
-
+```
 ## 🛠️ Tech Stack
 
 - **.NET 10 / .NET MAUI** — cross-platform app framework
@@ -97,7 +97,7 @@ Before running the project, make sure you have:
 ---
 
 ## 📂 Project Structure
-
+```
 
 cipher_notes/
 ├── Cipher_Notes/                     # MAUI Blazor Hybrid app
@@ -130,7 +130,7 @@ cipher_notes/
 │
 └── Cipher_Notes.Tests/                # xUnit test project
     └── TestEncryptionService.cs      # Unit tests for AES encryption/decryption logic
-
+```
 
 🧪 Testing
 
