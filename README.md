@@ -22,20 +22,25 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 
 ## 🏗️ Architecture
 
-```text
-UI Layer (Blazor .razor Pages)
-        ↓
-ViewModels (State & Logic - CommunityToolkit.Mvvm)
-        ↓
-Service Layer
-   ├── EncryptionService
-   ├── NoteService
-   └── DatabaseService
-        ↓
-SQLite (Local Storage)
-```
+┌─────────────────────────────────────────┐
+│  Cipher_Notes  (MAUI Blazor Hybrid app)  │
+│  Razor Pages · ViewModels · DI setup     │
+└───────────────────┬─────────────────────┘
+                     │ references
+┌────────────────────▼────────────────────┐
+│  Cipher_Notes.Core  (plain class library) │
+│  Models · Services · Exceptions           │
+│  — no MAUI dependency —                   │
+└────────────────────┬────────────────────┘
+                     │ persists to
+               ┌─────▼─────┐
+               │  SQLite   │
+               └───────────┘
 
----
+┌─────────────────────────────────────────┐
+│  Cipher_Notes.Tests  (xUnit)              │
+│  references Cipher_Notes.Core directly    │
+└─────────────────────────────────────────┘
 
 ## 🛠️ Tech Stack
 
@@ -63,13 +68,13 @@ Before running the project, make sure you have:
 ## 🚀 How to Run (Visual Studio)
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/SupremeEngineer98/CipherNotes
-   cd cipher_notes
-   ```
+   
+  git clone https://github.com/SupremeEngineer98/CipherNotes
+  cd cipher_notes
+  
 
 2. **Open the solution**
-   - Open `Cipher_Notes.sln` in Visual Studio.
+   - Open Cipher_Notes.sln in Visual Studio.
 
 3. **Restore NuGet packages**
    - Visual Studio should restore them automatically on load.
@@ -93,37 +98,65 @@ Before running the project, make sure you have:
 
 ## 📂 Project Structure
 
-```text
-Cipher_Notes/
-├── Models/
-│   └── SecureNotes.cs          # Note entity (Id, Title, Encrypted_content, Salt, IV, dates)
-├── Services/
-│   ├── DatabaseService.cs      # SQLite CRUD operations
-│   ├── EncryptionService.cs    # AES encryption/decryption + PBKDF2 key derivation
-│   └── NoteService.cs          # Business logic connecting UI to DB & encryption
-├── ViewModels/
-│   ├── NoteListViewModel.cs
-│   ├── DecryptNoteViewModel.cs
-│   └── UpdateNoteViewModel.cs
-├── Pages/ (Razor Components)
-│   ├── Home.razor              # Notes list / dashboard
-│   ├── CreateNote.razor         # Create a new encrypted note
-│   ├── ViewNote.razor           # Decrypt & view a note
-│   └── UpdateNote.razor         # Decrypt & edit an existing note
+
+cipher_notes/
+├── Cipher_Notes/                     # MAUI Blazor Hybrid app
+│   ├── ViewModels/
+│   │   ├── NoteListViewModel.cs
+│   │   ├── DecryptNoteViewModel.cs
+│   │   └── UpdateNoteViewModel.cs
+│   ├── Pages/ (Razor Components)
+│   │   ├── Home.razor               # Notes list / dashboard
+│   │   ├── CreateNote.razor         # Create a new encrypted note
+│   │   ├── ViewNote.razor           # Decrypt & view a note
+│   │   └── UpdateNote.razor         # Decrypt & edit an existing note
+│   ├── wwwroot/
+│   │   ├── css/app.css              # App styling
+│   │   └── images/                  # Logo & icons
+│   ├── MauiProgram.cs               # DI container configuration
+│   └── App.xaml.cs                  # App entry point
 │
-│── Exceptions/(Exception Classes) 
-│   ├── InvalidPasswordException.cs #Custom exception for invalid password
-│   ├── NotFoundException.cs        #Custom exception for not found exception messages
-│   ├── ValidationException.cs      #Custom exception for empty inputs or other validation errors
-├── wwwroot/
-│   ├── css/app.css              # App styling
-│   └── images/                  # Logo & icons
-├── MauiProgram.cs               # DI container configuration
-└── App.xaml.cs                  # App entry point
-```
+├── Cipher_Notes.Core/                # Plain class library (no MAUI dependency)
+│   ├── Models/
+│   │   └── SecureNotes.cs           # Note entity (Id, Title, Encrypted_content, Salt, IV, dates)
+│   ├── Services/
+│   │   ├── DatabaseService.cs       # SQLite CRUD operations
+│   │   ├── EncryptionService.cs     # AES encryption/decryption + PBKDF2 key derivation
+│   │   └── NoteService.cs           # Business logic connecting UI to DB & encryption
+│   └── Exceptions/
+│       ├── InvalidPasswordException.cs  # Thrown when decryption fails due to a wrong password
+│       ├── NotFoundException.cs         # Thrown when a requested note does not exist
+│       └── ValidationException.cs       # Thrown on invalid/empty input
+│
+└── Cipher_Notes.Tests/                # xUnit test project
+    └── TestEncryptionService.cs      # Unit tests for AES encryption/decryption logic
 
----
 
+🧪 Testing
+
+Cipher_Notes.Tests is an xUnit project covering EncryptionService in Cipher_Notes.Core. Tests run instantly since the Core library has no MAUI/platform dependency.
+
+Run from Visual Studio: open Test Explorer → Run All Tests.
+If prompted "There were build errors. Would you like to continue and run tests from the last successful build?" — click Yes. This happens because the MAUI app is part of the same solution but isn't required for the tests themselves.
+
+Run from the CLI:
+
+bashdotnet test cipher_notes/Cipher_Notes.Tests/Cipher_Notes.Tests.csproj
+
+### 🧪 Test Coverage — `EncryptionService`
+
+| Test                                       
+|
+|EncryptNote_ValidInput_ReturnsEncryptedData: Encrypting valid content returns a non-null cipher text, salt, and IV, and the cipher text differs from the original content 
+|
+|Test_EmptyPassword_Throws_ValidationException: An empty password throws a ValidationException with the message *"Password cannot be empty"* 
+|
+|Test_Encrypt_Note_Randomness: Encrypting the same content twice produces a different salt, IV, and cipher text each time (proves randomness) 
+|
+|Test_Decrypted_Content_Will_Be_Equals_To_The_Original_Content_Before_Being_Encrypted: A full encrypt → decrypt round-trip returns the exact original content 
+|
+|Test_Decryption_Will_Return_Validation_Exception_If_Password_Null: Decrypting with an empty password throws a ValidationException|
+   
 ## 🔒 Security Notes
 
 - Each note is encrypted individually using **AES** with a unique **salt** and **IV**.
