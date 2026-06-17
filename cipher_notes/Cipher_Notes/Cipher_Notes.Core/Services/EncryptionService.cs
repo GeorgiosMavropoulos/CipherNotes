@@ -154,7 +154,7 @@ namespace Cipher_Notes.Core.Services
             }
             catch (FormatException ex)
             {
-                throw new ValidationException("Invalid salt format", ex);
+                throw new ValidationException("    ", ex);
             }
 
 
