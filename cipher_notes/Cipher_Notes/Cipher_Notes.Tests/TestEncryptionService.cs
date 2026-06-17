@@ -215,5 +215,27 @@ namespace Cipher_Notes.Tests
             Assert.Equal(16, decoded_salt.Length);
         }
 
+        //test that GenerateIV method returns a 16 char sequence
+        [Fact]
+        public void Test_GenerateIV_Returns_A_16_Char_Sequence()
+        {
+            //Arrange
+            byte[] decoded_iv;
+
+            //Act
+            //use the iv variable to store the generated iv
+            var iv = _encryptionService.GenerateIV();   
+
+            //Assert
+            //first verify that iv isn't null
+            Assert.NotNull(iv); 
+
+            //decode iv
+            decoded_iv = Convert.FromBase64String(iv);
+
+            //verify that decoded_iv is equals to 16
+            Assert.Equal(16, decoded_iv.Length);
+        }
+
     }
 }
