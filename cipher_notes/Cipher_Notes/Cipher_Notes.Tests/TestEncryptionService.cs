@@ -263,5 +263,47 @@ namespace Cipher_Notes.Tests
         
         }
 
+        //test that encryption works for special characters like '!@$R%%#%#%%#'
+        [Fact]
+        public void Test_That_EncryptNote_Can_Encrypt_Special_Chars()
+        {
+            //Arrange
+            var content = "!@#$$&*()*@&^$@%@%$&^+=/****?/|`2``~";
+
+            var password = "password";
+
+            //ACT
+            var (cipherText, salt, iv) = _encryptionService.EncryptNote(content, password);
+
+            //Assert
+            Assert.NotNull(cipherText); //test that cipher text is not null
+            Assert.NotNull(salt);// test that salt is not null
+            Assert.NotNull(iv); //test that iv is not null
+            Assert.NotNull(password); //test that password is not null
+            Assert.NotEqual(cipherText, content);//test that cipher text and content is not equal. This means that content has been encrypted
+
+        }
+
+        //test that encryption works for greek text
+        [Fact]
+        public void Test_That_EncryptNote_Can_Encrypt_Greek_Chars()
+        {
+            //Arrange
+            var content = "Καλησπέρα σας.";
+
+            var password = "password";
+
+            //ACT
+            var (cipherText, salt, iv) = _encryptionService.EncryptNote(content, password);
+
+            //Assert
+            Assert.NotNull(cipherText); //test that cipher text is not null
+            Assert.NotNull(salt);// test that salt is not null
+            Assert.NotNull(iv); //test that iv is not null
+            Assert.NotNull(password); //test that password is not null
+            Assert.NotEqual(cipherText, content);//test that cipher text and content is not equal. This means that content has been encrypted
+
+        }
+
     }
 }
