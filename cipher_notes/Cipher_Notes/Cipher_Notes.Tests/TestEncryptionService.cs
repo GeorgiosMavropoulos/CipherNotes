@@ -328,5 +328,28 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //test that DecryptNote can decrypt special chars
+        [Fact]
+        public void Test_That_DecryptNote_Can_Decrypt_Special_Chars()
+        {
+            //Arrange
+            var content = "!#^%!#!&)#^!_#!$%_!$&*/-+---/?<>";
+
+            var password = "password";
+
+            //ACT
+            //Firstly I encrypt the content
+            var (cipherText, salt, iv) = _encryptionService.EncryptNote(content, password);
+
+            //then using the DecryptNote method to decrypt the text
+            var decrypted_content = _encryptionService.DecryptContent(cipherText, password, salt, iv);
+
+
+            //Assert
+            //Assert that decrypted content is equals to content
+            Assert.Equal(content, decrypted_content);
+
+        }
+
     }
 }
