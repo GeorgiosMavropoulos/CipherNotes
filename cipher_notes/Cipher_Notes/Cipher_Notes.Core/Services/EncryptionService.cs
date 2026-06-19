@@ -1,5 +1,6 @@
 ﻿
 using Cipher_Notes.Core.Exceptions;
+using Cipher_Notes.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Cipher_Notes.Core.Services
 {
-    public class EncryptionService
+    public class EncryptionService: IEncryptionService
     {
         //declaring variables
         private const int key_size = 256;

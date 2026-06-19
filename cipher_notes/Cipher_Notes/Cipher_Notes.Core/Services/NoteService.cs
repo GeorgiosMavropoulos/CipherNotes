@@ -10,9 +10,9 @@ namespace Cipher_Notes.Core.Services
     public class NoteService
     {
         private readonly IDatabaseService databaseService;
-        private readonly EncryptionService encryptionService;
+        private readonly IEncryptionService encryptionService;
 
-        public NoteService(IDatabaseService db, EncryptionService crypto)
+        public NoteService(IDatabaseService db, IEncryptionService crypto)
         {
             databaseService = db;
             encryptionService = crypto;

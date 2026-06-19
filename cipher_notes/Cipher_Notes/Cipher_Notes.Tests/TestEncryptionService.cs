@@ -2,6 +2,7 @@
 using Cipher_Notes.Core.Services;
 
 using Cipher_Notes.Core.Exceptions;
+using Cipher_Notes.Core.Interfaces;
 namespace Cipher_Notes.Tests
 {
     public class TestEncryptionService
