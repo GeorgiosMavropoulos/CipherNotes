@@ -1,5 +1,6 @@
 ﻿using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
+using Cipher_Notes.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -14,7 +15,7 @@ namespace Cipher_Notes.ViewModels
     public partial class CreateNoteViewModel:ObservableObject
     {
         //declare variable properties
-        private NoteService note_service;
+        private INoteService note_service;
 
 
         [ObservableProperty]
@@ -27,7 +28,7 @@ namespace Cipher_Notes.ViewModels
         private string password;
 
         //declare constructor
-        public CreateNoteViewModel(NoteService note_service)
+        public CreateNoteViewModel(INoteService note_service)
         {
             this.note_service = note_service; 
         }

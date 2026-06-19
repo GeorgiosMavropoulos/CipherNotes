@@ -27,7 +27,7 @@ namespace Cipher_Notes
             builder.Services.AddSingleton<IDatabaseService>(sp =>
     new DatabaseService(Path.Combine(FileSystem.AppDataDirectory, "cipher_notes.db")));//define path
             builder.Services.AddTransient<IEncryptionService, EncryptionService>();
-            builder.Services.AddTransient<NoteService>();
+            builder.Services.AddTransient<INoteService, NoteService>();
 
             builder.Services.AddMauiBlazorWebView();
 

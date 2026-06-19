@@ -7,7 +7,7 @@ using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Interfaces;
 namespace Cipher_Notes.Core.Services
 {
-    public class NoteService
+    public class NoteService : INoteService
     {
         private readonly IDatabaseService databaseService;
         private readonly IEncryptionService encryptionService;
