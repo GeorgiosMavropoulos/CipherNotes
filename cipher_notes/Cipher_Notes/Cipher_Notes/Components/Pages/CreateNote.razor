@@ -2,8 +2,9 @@
 @using Cipher_Notes.ViewModels
 @using Cipher_Notes.Core.Models
 @using Cipher_Notes.Core.Exceptions
+@using Cipher_Notes.Core.Interfaces;
 @page "/create"
-@inject NoteService NoteService
+@inject INoteService NoteService
 @inject NavigationManager Navigation
 
 

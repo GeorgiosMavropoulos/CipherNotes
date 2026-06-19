@@ -2,9 +2,10 @@
 @using Cipher_Notes.Core.Services
 @using Cipher_Notes.ViewModels
 @using Cipher_Notes.Core.Exceptions
+@using Cipher_Notes.Core.Interfaces
 @page "/update/{Id:int}"
 
-@inject NoteService NoteService
+@inject INoteService NoteService
 @inject NavigationManager Navigation
 
 <div class="update_note-page">
