@@ -1,17 +1,18 @@
 ﻿
+using Cipher_Notes.Core.Interfaces;
 using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
 using SQLite;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Threading;
 using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace Cipher_Notes.Core.Services
 {
-    public class DatabaseService
+    public class DatabaseService:IDatabaseService
     {
         //declaring variables!
 

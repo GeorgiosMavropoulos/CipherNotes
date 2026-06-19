@@ -1,6 +1,7 @@
 ﻿using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
 using Cipher_Notes.ViewModels;
+using Cipher_Notes.Core.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,7 @@ namespace Cipher_Notes
 
            
             builder.Services.AddTransient<MainPage>();
-            builder.Services.AddSingleton<DatabaseService>(sp =>
+            builder.Services.AddSingleton<IDatabaseService>(sp =>
     new DatabaseService(Path.Combine(FileSystem.AppDataDirectory, "cipher_notes.db")));//define path
             builder.Services.AddTransient<EncryptionService>();
             builder.Services.AddTransient<NoteService>();

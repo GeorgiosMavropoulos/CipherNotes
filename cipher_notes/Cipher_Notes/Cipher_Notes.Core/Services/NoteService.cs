@@ -4,14 +4,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Interfaces;
 namespace Cipher_Notes.Core.Services
 {
     public class NoteService
     {
-        private readonly DatabaseService databaseService;
+        private readonly IDatabaseService databaseService;
         private readonly EncryptionService encryptionService;
 
-        public NoteService(DatabaseService db, EncryptionService crypto)
+        public NoteService(IDatabaseService db, EncryptionService crypto)
         {
             databaseService = db;
             encryptionService = crypto;
@@ -44,6 +45,7 @@ namespace Cipher_Notes.Core.Services
             {
                 throw new Exception(ex.Message, ex);
             }
+            
         }
 
             //get all notes method
@@ -141,6 +143,12 @@ namespace Cipher_Notes.Core.Services
                 //loading note
                 var existingNote = await databaseService.GetById(id);
 
+                //reuturn an error message if existingNote is null
+                if(existingNote == null)
+                {
+                    throw new NotFoundException("Note does not exist");
+                }
+
 
                 //validate password
                
@@ -172,10 +180,11 @@ namespace Cipher_Notes.Core.Services
                     await databaseService.Update(existingNote);
 
                 }
+                  
                 catch(ValidationException) //return an error message if use has not completed all the inputs in the form
                 {
                     throw;
-            }
+                }
                 catch (InvalidPasswordException) //return an error message if password is wrong
                 {
                 throw;
@@ -201,20 +210,24 @@ namespace Cipher_Notes.Core.Services
                 //loading note
                 var retrieve_Note = await databaseService.GetById(id);
 
+
                 //return an error message if note does not exist
                 if(retrieve_Note == null)
                 {
                     throw new NotFoundException("Note not found");
                 }
+           
                 //delete note if exists
                 await databaseService.Delete(id);
 
-
-
+            }
+            catch(NotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                throw new KeyNotFoundException("Error.Deletion failed", ex);
+                throw new Exception("Error.Deletion failed", ex);
             }
                
             
