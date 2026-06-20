@@ -2,10 +2,12 @@
 @using Cipher_Notes.ViewModels
 @using Cipher_Notes.Core.Models
 @using Cipher_Notes.Core.Exceptions
-@using Cipher_Notes.Core.Interfaces;
+@using Cipher_Notes.Core.Interfaces
+@using Cipher_Notes.Services
 @page "/create"
 @inject INoteService NoteService
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 
 
 
@@ -54,7 +56,7 @@
             //if confirm password is null return an error message
             if(string.IsNullOrEmpty(confirmPassword))
             {
-                await Application.Current.MainPage.DisplayAlertAsync("Confirmation Error","Please confirm password","OK");
+                await DialogService.ShowAlert("Confirmation Error", "Please confirm password", "OK");
                 return;
             }
             //validate that password match
@@ -64,12 +66,12 @@
                     await NoteService.CreateNote(title, content, password);
 
                     //alert user that note has been created
-                    await App.Current.MainPage.DisplayAlertAsync("Success", "Note created!", "BACK");
+                await DialogService.ShowAlert("Success", "Note created!", "BACK");
                     Navigation.NavigateTo("/");
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlertAsync("Error", "Passwords do not match", "OK");
+                await DialogService.ShowAlert("Error", "Passwords do not match", "OK");
                 }
 
 
@@ -78,13 +80,13 @@
 
         catch (ValidationException ex) //return an error message if password is null
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password, content or title is null
+            await DialogService.ShowAlert("Error", ex.Message, "OK"); //return an exception if password, content or title is null
             return;
         }
 
         catch (Exception ex) //throw a general exception message if sth goes wrong
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
+            await DialogService.ShowAlert("Error", ex.Message, "OK");
         }
 
 
