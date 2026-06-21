@@ -42,8 +42,8 @@ namespace Cipher_Notes.Tests
             //encrypt a text using mock encryption with EncryptNote method. Method should return the encrypted text, salt and iv for decryption
             mocked_encryption.Setup(x => x.EncryptNote("content", "pass")).Returns(("cipherText", "salt", "IV"));
 
-            //Act
-            //call the database.Create()method to create the note
+            //Act 
+            //call the Create()method to create the note from NoteService
             await _noteService.CreateNote("title", "content", "pass");
 
             //Assert
