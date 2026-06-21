@@ -121,6 +121,10 @@ namespace Cipher_Notes.Core.Services
                     );
 
             }
+            catch(ValidationException)
+            {
+                throw new ValidationException("Password is missing");//return an error message if password is missing
+            }
             catch (InvalidPasswordException ex) //return an error message if password is wrong
             {
                 throw new InvalidPasswordException("Wrong password",ex);

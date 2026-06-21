@@ -73,6 +73,24 @@ namespace Cipher_Notes.Tests
             Assert.Equal("Title is empty", exception.Message);
         }
 
+        //test that CreateNote returns validation exception with the correct message when user does not insert content
+        [Fact]
+        public async Task Test_CreateNote_Returns_ValidationException_When_Content_Missing() 
+        {
+            //Arrange 
+            var title = "test";
+            var password = "1234";
+            var content = string.Empty;
+
+            //Act and Assert
+            //call the CreateNote method using _noteService object. Assert that ValidationException will be returned
+            var exception = await Assert.ThrowsAsync<ValidationException>(() => _noteService.CreateNote(title, content, password));
+
+            //Assert
+            //Assert that the error message is equals to 'Content is empty'
+            Assert.Equal("Content is empty", exception.Message);
+        }
+
 
     }
 }
