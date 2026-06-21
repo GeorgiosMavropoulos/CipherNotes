@@ -41,6 +41,10 @@ namespace Cipher_Notes.Core.Services
 
                 await databaseService.Create(note);
             }
+            catch(ValidationException) //catch all validation exceptions
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);

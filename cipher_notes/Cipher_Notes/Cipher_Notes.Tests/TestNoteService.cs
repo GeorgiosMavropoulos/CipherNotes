@@ -5,6 +5,7 @@ using Cipher_Notes.Core.Models;
 using Moq;
 using Cipher_Notes.Core.Services;
 
+
 using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
 
@@ -34,7 +35,7 @@ namespace Cipher_Notes.Tests
         }
 
 
-        //test that create note service successfully creates a note
+        //test that CreateNote  successfully creates a note
         [Fact]
         public async Task Test_CreateNote_ValidInput_Calls_Create()
         {
@@ -54,6 +55,24 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //test that CreateNote returns validation exception with the correct message when user does not insert title
+        [Fact]
+        public async Task Test_CreateNote_Returns_ValidationException_When_Title_Missing()
+        {
+            //Arrange 
+            var title = string.Empty;
+            var password = "1234";
+            var content = "test";
 
+            //Act and Assert
+            //call the CreateNote method using _noteService object. Assert that ValidationException will be returned
+            var exception = await Assert.ThrowsAsync<ValidationException>(()=> _noteService.CreateNote(title, content, password));
+
+            //Assert
+            //Assert that error message is equals to Title is empty
+            Assert.Equal("Title is empty", exception.Message);
         }
+
+
+    }
 }
