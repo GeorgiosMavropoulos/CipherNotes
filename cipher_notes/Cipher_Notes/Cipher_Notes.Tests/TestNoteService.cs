@@ -34,5 +34,26 @@ namespace Cipher_Notes.Tests
         }
 
 
+        //test that create note service successfully creates a note
+        [Fact]
+        public async Task Test_CreateNote_ValidInput_Calls_Create()
+        {
+            //Arrange
+            //encrypt a text using mock encryption with EncryptNote method. Method should return the encrypted text, salt and iv for decryption
+            mocked_encryption.Setup(x => x.EncryptNote("content", "pass")).Returns(("cipherText", "salt", "IV"));
+
+            //Act
+            //call the database.Create()method to create the note
+            await _noteService.CreateNote("title", "content", "pass");
+
+            //Assert
+            //verify that database.Create method from NoteService has been called once
+            mocked_db.Verify(x => x.Create(It.IsAny<SecureNotes>()),Times.Once);
+
+
+
+        }
+
+
         }
 }
