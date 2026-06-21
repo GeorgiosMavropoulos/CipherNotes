@@ -1,7 +1,9 @@
 ﻿
+using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
 using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
+
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -36,11 +38,11 @@ namespace Cipher_Notes.Core.Services
                 if (initialized) return;
 
                 if (_connection == null)
-                    throw new Exception("Database connection not initialized");
+                    throw new NotFoundException("Database connection not initialized");
 
                 await _connection.CreateTableAsync<SecureNotes>();
 
-                System.Diagnostics.Debug.WriteLine("Table SecureNotes created or already exists");
+                
                 initialized = true;
             }
             finally
@@ -75,7 +77,7 @@ namespace Cipher_Notes.Core.Services
 
             }catch(Exception ex)
             {
-                throw new Exception("Failed to get all notes", ex);
+                throw new DatabaseException("Failed to retrive all notes", ex);
             }
             
         }
@@ -96,7 +98,7 @@ namespace Cipher_Notes.Core.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to retrieve note", ex);
+                throw new DatabaseException("Failed to retrieve note", ex);
             }
 
         }
@@ -115,7 +117,7 @@ namespace Cipher_Notes.Core.Services
 
             }catch(Exception ex)
             {
-                throw new Exception("Failed to save note in the Database", ex);
+                throw new DatabaseException("Failed to save note in the Database", ex);
             }
             
         }
@@ -133,12 +135,12 @@ namespace Cipher_Notes.Core.Services
                 int rows = await _connection.UpdateAsync(securenote);//update the new object's details into the Db
 
                 if (rows == 0) //return an error message if note does not exist or not updated
-                    throw new Exception("Note not found or not updated");
+                    throw new  NotFoundException("Note not found or not updated");
 
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to update note", ex);
+                throw new DatabaseException("Failed to update note", ex);
             }
 
         }
@@ -159,13 +161,13 @@ namespace Cipher_Notes.Core.Services
                //return an error message if id does not exist
                if(rows == 0)
                 {
-                    throw new Exception("Note does not exist");
+                    throw new NotFoundException("Note does not exist");
                 }
 
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete note", ex);
+                throw new DatabaseException("Failed to delete note", ex);
             }
         }
 
