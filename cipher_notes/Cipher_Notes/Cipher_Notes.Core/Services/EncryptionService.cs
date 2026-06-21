@@ -78,6 +78,11 @@ namespace Cipher_Notes.Core.Services
                 return Convert.ToBase64String(ms.ToArray());
 
             }
+            
+            catch(ValidationException)//throw a validation exception if password is missing
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new InvalidOperationException("Content encryption failed", e);
@@ -129,7 +134,23 @@ namespace Cipher_Notes.Core.Services
                 //read plaintext
                 string plain_text = reader.ReadToEnd();
 
+                //added this block of code since some flakky tests fail.
+                //When password is wrong sometimes it returns garbage data.
+                if (plain_text.Any(c => c == '\0')) 
+                {
+                    throw new InvalidPasswordException("Wrong password");
+                }
+                   
+
                 return plain_text; //return plain text to user
+            }
+            catch (InvalidPasswordException) //throw InvalidPasswordException if password is missing
+            {
+                throw;
+            }
+            catch (ValidationException)//throw a validation exception if password is missing
+            {
+                throw;
             }
             catch (CryptographicException ex)
             {
