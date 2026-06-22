@@ -103,14 +103,9 @@ namespace Cipher_Notes.Core.Services
             try
             {
                 //retrieve selected note
-                var note = await databaseService.GetById(id);
+                var note = await GetNoteById(id);
 
-                //return an error message if note does not exists
-                if (note == null)
-                {
-                    throw new NotFoundException("Note not found");
-                }
-
+               
                     //if note exists continue decryption
                     return encryptionService.DecryptContent
                     (
