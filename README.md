@@ -58,7 +58,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 Before running the project, make sure you have:
 
 - **Visual Studio 2022** (17.8 or later) with the following workloads installed:
-  - **.NET Multi-platform App UI development** (MAUI)
+  - **.NET Blazor Hybrid** 
   - **Android SDK & Emulator** (installed automatically with the MAUI workload)
 - **.NET 10 SDK** (or the version targeted by the project)
 - An **Android Emulator** configured (Pixel device recommended, API 34+, 4GB+ RAM)
