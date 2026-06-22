@@ -146,33 +146,19 @@ namespace Cipher_Notes.Core.Services
             //try catch to handle unexpected errors
             try
             {
-                // first decrypt content
 
+                //return an error message if content/password or title is missing
+                ValidateInputs(content, title, password);
                 //loading note
-                var existingNote = await databaseService.GetById(id);
+                var existingNote = await GetNoteById(id);
 
-                //reuturn an error message if existingNote is null
-                if(existingNote == null)
-                {
-                    throw new NotFoundException("Note does not exist");
-                }
-
-
+                // first decrypt content
                 //validate password
-               
-                    var decrypted_note = encryptionService.DecryptContent
-                   (
-                       existingNote.Encrypted_content,
-                       password,
-                       existingNote.Salt,
-                       existingNote.IV
-                   );
+
+                var decrypted_note = await DecryptNote(id, password); //call the method to decrypt note
 
 
-
-
-                    //return an error message if content/password or title is missing
-                    ValidateInputs(content, title,password);
+                   
 
                     //encrypt updated content
                     var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
@@ -206,6 +192,7 @@ namespace Cipher_Notes.Core.Services
             }
                    
 
+        
              
 
            //delete note method
