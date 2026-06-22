@@ -3,6 +3,7 @@ using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -134,13 +135,10 @@ namespace Cipher_Notes.Core.Services
                 //read plaintext
                 string plain_text = reader.ReadToEnd();
 
-                //added this block of code since some flakky tests fail.
-                //When password is wrong sometimes it returns garbage data.
-                if (plain_text.Any(c => c == '\0')) 
-                {
-                    throw new InvalidPasswordException("Wrong password");
-                }
-                   
+
+         
+
+
 
                 return plain_text; //return plain text to user
             }
