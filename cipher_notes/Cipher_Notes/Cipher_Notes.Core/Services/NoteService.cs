@@ -166,7 +166,7 @@ namespace Cipher_Notes.Core.Services
                     note.Updated_at = DateTime.Now;
                               
 
-                //send query in the DB
+                //send query in the DB to update note's details
                 await databaseService.Update(note);
 
                 }
@@ -208,14 +208,8 @@ namespace Cipher_Notes.Core.Services
             try
             {
                 //loading note
-                var retrieve_Note = await databaseService.GetById(id);
+                var note = await GetNoteById(id);
 
-
-                //return an error message if note does not exist
-                if(retrieve_Note == null)
-                {
-                    throw new NotFoundException("Note not found");
-                }
            
                 //delete note if exists
                 await databaseService.Delete(id);
