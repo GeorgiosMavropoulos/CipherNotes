@@ -27,17 +27,17 @@ namespace Cipher_Notes.Core.Services
                 //return an error message if content/password or title is missing
                 ValidateInputs(content, title, password);
 
-                //encrypt note's content
-                var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
+               
 
-                var note = new SecureNotes
+                var note = new SecureNotes //create the note object and apply the new title
                 {
                     Title = title,
-                    Encrypted_content = cipher,
-                    Salt = salt,
-                    IV = iv,
+                    
                     Created_at = DateTime.Now
                 };
+
+                //encrypt note
+                await ApplyEncryption(note, content, password);
 
                 await databaseService.Create(note);
             }
@@ -82,6 +82,7 @@ namespace Cipher_Notes.Core.Services
                    if(note == null)
                    {
                     throw new NotFoundException("Note not found");
+                    
                    }
 
                   //return the note
@@ -150,28 +151,23 @@ namespace Cipher_Notes.Core.Services
                 //return an error message if content/password or title is missing
                 ValidateInputs(content, title, password);
                 //loading note
-                var existingNote = await GetNoteById(id);
+                var note = await GetNoteById(id);
 
                 // first decrypt content
                 //validate password
 
                 var decrypted_note = await DecryptNote(id, password); //call the method to decrypt note
 
+                    //update note's title
+                    note.Title = title;
 
-                   
+                    //encrypt note
+                    await ApplyEncryption(note, content, password);
+                    note.Updated_at = DateTime.Now;
+                              
 
-                    //encrypt updated content
-                    var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
-
-                    //update note
-                    existingNote.Title = title;
-                    existingNote.Encrypted_content = cipher;
-                    existingNote.Salt = salt;
-                    existingNote.IV = iv;
-                    existingNote.Updated_at = DateTime.Now;
-
-                    //send query in the DB
-                    await databaseService.Update(existingNote);
+                //send query in the DB
+                await databaseService.Update(note);
 
                 }
                   
@@ -191,7 +187,16 @@ namespace Cipher_Notes.Core.Services
                 }
             }
                    
+            //method to apply encryption
+            public async Task ApplyEncryption(SecureNotes note, string content, string password)
+            {
+                //encrypt update content
+                var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
 
+               note.Encrypted_content = cipher;
+               note.Salt = salt;
+               note.IV = iv;
+            }
         
              
 
