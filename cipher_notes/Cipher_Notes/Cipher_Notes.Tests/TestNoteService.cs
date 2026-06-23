@@ -209,7 +209,7 @@ namespace Cipher_Notes.Tests
         [Fact]
         public async Task Test_GetNoteById_Returns_NotFoundException_With_The_Appropriate_Message_When_Note_Does_Not_Exist()
         {
-            //Assert
+            //Arrange
             //mock a db object
             mocked_db.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync((SecureNotes?)null); //create a null object
 
@@ -226,6 +226,28 @@ namespace Cipher_Notes.Tests
             mocked_db.Verify(x => x.GetById(1), Times.Once());
 
 
+        }
+
+        //test that the NoteService allows the exception of GetNoteById to be returned
+        [Fact]
+        public async Task Test_GetNoteById_Returns_The_Expected_General_Exception()
+        {
+            //Arrange
+            //create a mocked db object in order to create a note
+            mocked_db.Setup(x=> x.GetById(It.IsAny<int>())).ThrowsAsync(new Exception("DB error"));
+
+            //Act
+            var service =  new NoteService(mocked_db.Object, mocked_encryption.Object);
+
+            //call the method to return the exception
+            var exception = await Assert.ThrowsAsync<Exception>(()=>service.GetNoteById(1));
+
+            //Assert
+            //verify that the expected message will be: Failed to get note
+            Assert.Equal("Failed to get note",exception.Message);
+
+            //verify the DB has been called
+            mocked_db.Verify(x=> x.GetById(1),Times.Once());
         }
     }
 }
