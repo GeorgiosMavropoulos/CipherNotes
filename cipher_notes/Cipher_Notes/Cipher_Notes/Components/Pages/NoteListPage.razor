@@ -84,6 +84,7 @@
         openMenuId = null;
     }
 
+    <!-- - search query for notes for notes--->
     private IEnumerable<SecureNotes> FilteredNotes =>
         notes.Where(n => n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
