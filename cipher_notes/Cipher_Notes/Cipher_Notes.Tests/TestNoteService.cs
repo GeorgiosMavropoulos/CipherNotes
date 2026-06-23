@@ -33,6 +33,7 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //-------------Test CreateNote----------------------------//
 
         //test that CreateNote  successfully creates a note
         [Fact]
@@ -109,6 +110,8 @@ namespace Cipher_Notes.Tests
 
         }
 
+        ///----------------- Test GetAllNotes method --------------------//
+
         //test that GetAllNotes returns a list with a note. This method creates a mocked note, and it must return a single item inside a list
         [Fact]
         public async Task Test_GetAllNotes_Returns_A_List_With_A_Single_Note()
@@ -167,6 +170,38 @@ namespace Cipher_Notes.Tests
 
             //Assert that the the exception message is equals to 'Failed to get notes'
             Assert.Equal("Failed to get notes", ex.Message);
+        }
+
+
+
+        ///----------------- Test GetANoteById method --------------------//
+
+
+        //test that GetNoteById successfully retrieves the requested note
+        [Fact]
+        public async Task Test_GetNoteById_Returnes_The_Requested_Note()
+        {
+            //Arrange
+            //create a mocked note
+            var expectedNote = new SecureNotes { Id = 1, Title = "title" };
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(expectedNote);// when method will be called it should return this note
+
+            //Act
+            //retrieve note
+            var note = await _noteService.GetNoteById(1);
+
+            //Assert
+            //validate that the list is not null
+            Assert.NotNull(note);
+
+            //verify that title matches with the expected note
+            Assert.Equal(expectedNote.Title, note.Title);
+
+            //verify that the id matches with the expected note
+            Assert.Equal(expectedNote.Id, note.Id);
+
+            //verify that the db has been called
+            mocked_db.Verify(x=> x.GetById(1), Times.Once());
         }
 
 
