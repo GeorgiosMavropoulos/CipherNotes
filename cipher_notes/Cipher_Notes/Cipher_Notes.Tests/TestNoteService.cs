@@ -135,6 +135,24 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //test that GetAllNotes returns am empty list if db is empty.
+        [Fact]
+        public async Task Test_GetAllNotes_Returns_An_Empty_List_If_DB_Is_Empty()
+        {
+            //Arrange
+            //use the mocked db object, but leave it empty.
+            mocked_db.Setup(x => x.GetSecureNotes()).ReturnsAsync(new List<SecureNotes>());
+
+            //Act
+            //call GetAllNotes method
+            var result = await _noteService.GetAllNotes();
+
+            //Assert that the list has been returned
+            Assert.NotNull(result);
+            //Assert that result is empty
+            Assert.Empty(result);   
+        }
+
 
 
     }
