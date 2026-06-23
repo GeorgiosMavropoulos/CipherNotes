@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Cipher_Notes.Core.Models;
-using Moq;
-using Cipher_Notes.Core.Services;
-
-
-using Cipher_Notes.Core.Exceptions;
+﻿using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
+using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
 
 namespace Cipher_Notes.Tests
 {
@@ -151,6 +150,23 @@ namespace Cipher_Notes.Tests
             Assert.NotNull(result);
             //Assert that result is empty
             Assert.Empty(result);   
+        }
+
+        //test that the NoteService allows the exception of GetAllNotes to be returned
+        [Fact]
+        public async Task Test_GetAllNotes_Returns_The_Expected_Exception()
+        {
+            //Arrange
+            // use the mocked db object to return the exceptions
+            mocked_db.Setup(x => x.GetSecureNotes()).ThrowsAsync(new Exception("Db error"));
+
+            //Act 
+            var service = new NoteService(mocked_db.Object,mocked_encryption.Object);
+            //call the method to return the exception
+            var ex = await Assert.ThrowsAsync<Exception>(()=> service.GetAllNotes());
+
+            //Assert that the the exception message is equals to 'Failed to get notes'
+            Assert.Equal("Failed to get notes", ex.Message);
         }
 
 
