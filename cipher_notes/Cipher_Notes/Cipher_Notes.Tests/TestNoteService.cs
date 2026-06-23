@@ -110,6 +110,30 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //test that GetAllNotes returns a list with a note. This method creates a mocked note, and it must return a single item inside a list
+        [Fact]
+        public async Task Test_GetAllNotes_Returns_A_List_With_A_Single_Note()
+        {
+            //
+            //Arrange
+            //add a single note called title inside the db with a mocked object
+            mocked_db.Setup(x => x.GetSecureNotes()).ReturnsAsync(new List<SecureNotes> {new SecureNotes { Title = "title"} });
+
+           //Act
+            
+            //call GetAllNotes method to return the note
+            var result = await _noteService.GetAllNotes();
+
+            //Assert
+            //verify that get all notes returns the note with title as 'title
+            Assert.Single(result);//assert that a single item is being returned
+            Assert.Equal("title", result[0].Title);//verify that note in the position zero inside the list has been returned with a title :title
+
+            //assert that it quered the DB
+            //verify that database.Create method from NoteService has been called once
+            mocked_db.Verify(x => x.GetSecureNotes(), Times.Once);
+
+        }
 
 
 
