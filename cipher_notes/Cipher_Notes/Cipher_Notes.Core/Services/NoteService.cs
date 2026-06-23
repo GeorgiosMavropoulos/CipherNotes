@@ -88,6 +88,10 @@ namespace Cipher_Notes.Core.Services
                   //return the note
                    return note;
                    }
+                    catch(NotFoundException)
+                    {
+                        throw; //return the caught exception
+                    }
                 catch (Exception ex) //return a general exception error
                 {
                 throw new Exception($"Failed to get note", ex);
