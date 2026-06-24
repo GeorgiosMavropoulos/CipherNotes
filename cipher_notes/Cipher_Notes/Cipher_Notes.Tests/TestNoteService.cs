@@ -289,5 +289,40 @@ namespace Cipher_Notes.Tests
             mocked_encryption.Verify(x => x.DecryptContent("cipher", "pass", "salt", "iv"), Times.Once());
 
         }
+
+        //test that DecryptMethod will return validationexception if password is empty
+        [Fact]
+        public async Task Test_DecryptNote_Will_Return_ValidationException_If_Password_Is_Empty()
+        {
+            //Arrange
+            //declare an empty variable called pass
+            var pass = string.Empty;
+            var expectedException = "Password is missing";
+            //create a new SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
+
+            };
+
+            //create the mocked db object and return note
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //set up the mocked decryption. This mocked encryption returns "note" if anyone calls the DecryptContent method
+            mocked_encryption.Setup(x => x.DecryptContent("cipher", pass, "salt", "iv")).Returns("note");
+
+            //Act
+            //Call DecryptNote with nullified pass
+            var ex = await Assert.ThrowsAsync<ValidationException>(()=> _noteService.DecryptNote(1, pass));
+
+
+            //Assert
+            //Assert the ValidationException message is 'Password is missing'
+            Assert.Equal(expectedException, ex.Message);
+
+        }
     }
 }

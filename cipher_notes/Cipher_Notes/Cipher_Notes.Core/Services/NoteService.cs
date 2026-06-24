@@ -106,12 +106,25 @@ namespace Cipher_Notes.Core.Services
             {
             try
             {
+               
                 //retrieve selected note
                 var note = await GetNoteById(id);
 
-               
-                    //if note exists continue decryption
-                    return encryptionService.DecryptContent
+                //return an error message if password is missing or note does not exists
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    throw new ValidationException("Password is missing");
+                }
+                else if (note == null)
+                {
+                    throw new NotFoundException("Note does not exists");
+                }
+
+
+
+
+                //if note exists continue decryption
+                return encryptionService.DecryptContent
                     (
                         note.Encrypted_content,
                         password,
@@ -123,11 +136,15 @@ namespace Cipher_Notes.Core.Services
             }
             catch(ValidationException)
             {
-                throw new ValidationException("Password is missing");//return an error message if password is missing
+                throw;//return an error message if password is missing
             }
             catch (InvalidPasswordException ex) //return an error message if password is wrong
             {
                 throw new InvalidPasswordException("Wrong password",ex);
+            }
+            catch(NotFoundException)
+            {
+                throw;
             }
 
             catch (FormatException e)
