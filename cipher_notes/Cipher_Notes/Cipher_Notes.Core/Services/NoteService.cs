@@ -113,7 +113,7 @@ namespace Cipher_Notes.Core.Services
                //return an error message if password is missing or note does not exists
               await ValidatePasswordNoteExistsDecryptNote(note, password);   
                 
-
+              
 
                 //if note exists continue decryption
                 return encryptionService.DecryptContent
@@ -130,7 +130,7 @@ namespace Cipher_Notes.Core.Services
             {
                 throw;//return an error message if password is missing
             }
-            catch (InvalidPasswordException) //return an error message if password is wrong
+            catch (InvalidPasswordException ex) //return an error message if password is wrong
             {
                 throw; //return invalid password exception
             }

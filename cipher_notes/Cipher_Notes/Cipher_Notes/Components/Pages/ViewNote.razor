@@ -3,8 +3,10 @@
 @using Cipher_Notes.Core.Exceptions
 @using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
+
 @page "/note/{Id:int}"
 @inject INoteService NoteService
+@inject IDialogService dialogService
 @inject NavigationManager Navigation
 
 
@@ -57,7 +59,7 @@ else
 
         }catch(NotFoundException ex)
         {
-            await App.Current.MainPage.DisplayAlertAsync( //display an error message if note does not exist
+            await dialogService.ShowAlert( //display an error message if note does not exist
                 "Error",
                 ex.Message,
                 "OK");
@@ -83,11 +85,11 @@ else
         }
         catch(ValidationException ex)
         {
-            await App.Current.MainPage.DisplayAlertAsync("Input error", ex.Message, "OK");
+            await dialogService.ShowAlert("Input error", ex.Message, "OK");
         }
         catch (InvalidPasswordException ex) //return an exception message if password is null
         {
-            await App.Current.MainPage.DisplayAlertAsync(
+            await dialogService.ShowAlert(
                "Authentication Error",
                ex.Message,
                "OK");
