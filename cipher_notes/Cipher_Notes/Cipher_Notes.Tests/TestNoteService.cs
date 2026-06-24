@@ -331,8 +331,8 @@ namespace Cipher_Notes.Tests
         {
             //Arrange
             //declare variables
-            var password = "pass";
-            var wrong_pass = "wrong pass";
+            
+            var pass = "wrong pass";
             var expected_ex_message = "Wrong Password";
 
             //create secure note object
@@ -348,13 +348,13 @@ namespace Cipher_Notes.Tests
             mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
             //create the mocked encryption object and set it up to return "note" if sb calls DecryptContent. Add the correct password
-            mocked_encryption.Setup(x => x.DecryptContent("cipher", password, "salt", "iv"));
+            mocked_encryption.Setup(x => x.DecryptContent("cipher", pass, "salt", "iv")).Throws(new InvalidPasswordException("Wrong Password"));
 
             //Act
             //call DecryptContent and decrypt with a falsed password
             //declare it as exception to compare later
             //Assert the expected exception
-            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(()=>_noteService.DecryptNote(1, wrong_pass));
+            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(()=>_noteService.DecryptNote(1, pass));
 
             //Assert
             //verify the exception message is equals to expected_ex_message (Wrong Password)
