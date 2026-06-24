@@ -110,17 +110,9 @@ namespace Cipher_Notes.Core.Services
                 //retrieve selected note
                 var note = await GetNoteById(id);
 
-                //return an error message if password is missing or note does not exists
-                if (string.IsNullOrWhiteSpace(password))
-                {
-                    throw new ValidationException("Password is missing");
-                }
-                else if (note == null)
-                {
-                    throw new NotFoundException("Note does not exists");
-                }
-
-
+               //return an error message if password is missing or note does not exists
+              await ValidatePasswordNoteExistsDecryptNote(note, password);   
+                
 
 
                 //if note exists continue decryption
@@ -138,9 +130,9 @@ namespace Cipher_Notes.Core.Services
             {
                 throw;//return an error message if password is missing
             }
-            catch (InvalidPasswordException ex) //return an error message if password is wrong
+            catch (InvalidPasswordException) //return an error message if password is wrong
             {
-                throw new InvalidPasswordException("Wrong password",ex);
+                throw; //return invalid password exception
             }
             catch(NotFoundException)
             {
@@ -154,6 +146,20 @@ namespace Cipher_Notes.Core.Services
            
 
 
+        }
+
+        //helper method for DecryptContent to validate if password is missing or note does note exists
+        public async Task ValidatePasswordNoteExistsDecryptNote(SecureNotes note, string password)
+        {
+            //return an error message if password is missing or note does not exists
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ValidationException("Password is missing");
+            }
+            else if (note == null)
+            {
+                throw new NotFoundException("Note does not exists");
+            }
         }
 
             //update note method

@@ -324,5 +324,41 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expectedException, ex.Message);
 
         }
+
+        //test that DecryptContent will return InvalidPasswordException (Wrong Password) if password is wrong
+        [Fact]
+        public async Task Test_DecryptContent_Returns_InvalidPasswordException_If_Password_Is_Wrong()
+        {
+            //Arrange
+            //declare variables
+            var password = "pass";
+            var wrong_pass = "wrong pass";
+            var expected_ex_message = "Wrong Password";
+
+            //create secure note object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create the mocked db object and return the note
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //create the mocked encryption object and set it up to return "note" if sb calls DecryptContent. Add the correct password
+            mocked_encryption.Setup(x => x.DecryptContent("cipher", password, "salt", "iv"));
+
+            //Act
+            //call DecryptContent and decrypt with a falsed password
+            //declare it as exception to compare later
+            //Assert the expected exception
+            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(()=>_noteService.DecryptNote(1, wrong_pass));
+
+            //Assert
+            //verify the exception message is equals to expected_ex_message (Wrong Password)
+            Assert.Equal(expected_ex_message, ex.Message);
+        }
     }
 }
