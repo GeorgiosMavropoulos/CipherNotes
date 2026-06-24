@@ -249,5 +249,45 @@ namespace Cipher_Notes.Tests
             //verify the DB has been called
             mocked_db.Verify(x=> x.GetById(1),Times.Once());
         }
+
+        //----------------------- TEST DecryptNote method-----------------------------------------//
+
+        //test that DecryptNote method successfully decrypts the note. 
+        [Fact]
+        public async Task Test_DecryptNote_Successfully_Decrypts_Note()
+        {
+            //Arrange            
+            //create a new SecureNotes object
+            var note = new SecureNotes
+            { 
+              Id = 1,
+              Encrypted_content = "cipher",
+              Salt = "salt",
+              IV = "iv"
+
+            };
+
+            //create the mocked db object and return note
+            mocked_db.Setup(x=> x.GetById(1)).ReturnsAsync(note);
+
+            //set up the mocked decryption. This mocked encryption returns "note" if anyone calls the DecryptContent method
+            mocked_encryption.Setup(x => x.DecryptContent("cipher", "pass", "salt", "iv")).Returns("note");
+
+            //act
+            //call the real decrypt content method
+            var decrypted_content = await _noteService.DecryptNote(1, "pass");
+
+            //assert that decrypted content = "note"
+            Assert.Equal("note", decrypted_content);
+
+            //verify that DB has been called at least once
+            
+            mocked_db.Verify(x => x.GetById(1), Times.Once());
+
+            //verify that DecryptContent has been called
+
+            mocked_encryption.Verify(x => x.DecryptContent("cipher", "pass", "salt", "iv"), Times.Once());
+
+        }
     }
 }
