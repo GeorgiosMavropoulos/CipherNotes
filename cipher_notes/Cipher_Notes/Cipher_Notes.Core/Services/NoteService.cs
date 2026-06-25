@@ -25,7 +25,7 @@ namespace Cipher_Notes.Core.Services
             {
                 
                 //return an error message if content/password or title is missing
-                ValidateInputs(content, title, password);
+              await  ValidateInputs(content, title, password);
 
                
 
@@ -174,7 +174,7 @@ namespace Cipher_Notes.Core.Services
             {
 
                 //return an error message if content/password or title is missing
-                ValidateInputs(content, title, password);
+              await  ValidateInputs(content, title, password);
                 //loading note
                 var note = await GetNoteById(id);
 
@@ -203,6 +203,14 @@ namespace Cipher_Notes.Core.Services
                 catch (InvalidPasswordException) //return an error message if password is wrong
                 {
                 throw;
+                }
+                catch (NotFoundException)
+                {
+                    throw;//throw exception if note has not been found
+                }
+                catch(CryptographicException ex)
+                {
+                  throw new CryptographicException($"{ex.Message}");//return Cryptographic exception if decryption or encryption fails
                 }
                 catch (Exception ex)
                 {
@@ -283,7 +291,7 @@ namespace Cipher_Notes.Core.Services
         }
 
         //method to return an error message if content or title is missing
-        private void ValidateInputs(string content, string title,string password)
+        private async Task ValidateInputs(string content, string title,string password)
         {
             if(string.IsNullOrWhiteSpace(title))
             {
