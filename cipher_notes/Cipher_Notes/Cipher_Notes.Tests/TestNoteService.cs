@@ -6,6 +6,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Cipher_Notes.Tests
@@ -391,6 +392,42 @@ namespace Cipher_Notes.Tests
             //Assert
             //verify exception message is equals to: Note does not exists
             Assert.Equal("Note not found", ex.Message);
+        }
+
+        //test DecryptContent returns CryptographicException
+        [Fact]
+        public async Task Test_DecryptContent_Returns_CryptographicException()
+        {
+            //Arrange
+            //create a SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create the mocked db object
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //create the mocked encryption object with ItIsAny paremeters
+            mocked_encryption.Setup(x => x.DecryptContent
+            (
+             It.IsAny<string>(),
+              It.IsAny<string>(),
+               It.IsAny<string>(),
+                It.IsAny<string>()
+            )).Throws(new CryptographicException("Decryption failed"));
+        
+
+        //Act
+        //call the DecryptContent method and manipulate it to return CryptographicException
+        var ex = await Assert.ThrowsAsync<CryptographicException>(() => _noteService.DecryptNote(1, "wrongpassword"));
+
+        //Assert
+        //assert that exception contains the following exception message: Decryption error
+        Assert.Contains("Decryption error", ex.Message);
         }
     }
 }

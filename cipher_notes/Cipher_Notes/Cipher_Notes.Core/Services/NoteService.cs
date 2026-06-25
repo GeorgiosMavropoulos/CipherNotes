@@ -139,11 +139,14 @@ namespace Cipher_Notes.Core.Services
                 throw;
             }
 
-            catch (FormatException e)
+            catch (CryptographicException e)
             {
-                throw new ValidationException("Decryption error", e);
+                throw new CryptographicException("Decryption error", e);
             }
-           
+            catch (Exception ex) // safety net
+            {
+                throw new Exception("Unexpected error during decryption", ex);
+            }
 
 
         }
