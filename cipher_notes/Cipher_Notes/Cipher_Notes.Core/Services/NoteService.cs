@@ -111,7 +111,7 @@ namespace Cipher_Notes.Core.Services
                 var note = await GetNoteById(id);
 
                //return an error message if password is missing or note does not exists
-              await ValidatePasswordNoteExistsDecryptNote(note, password);   
+              await ValidatePasswordNoteInputs(note, password);   
                 
               
 
@@ -149,7 +149,7 @@ namespace Cipher_Notes.Core.Services
         }
 
         //helper method for DecryptContent to validate if password is missing or note does note exists
-        public async Task ValidatePasswordNoteExistsDecryptNote(SecureNotes note, string password)
+        private async Task ValidatePasswordNoteInputs(SecureNotes note, string password)
         {
             //return an error message if password is missing or note does not exists
             if (string.IsNullOrWhiteSpace(password))
@@ -212,12 +212,40 @@ namespace Cipher_Notes.Core.Services
             //method to apply encryption
             public async Task ApplyEncryption(SecureNotes note, string content, string password)
             {
+               //try catch for exception handling
+               try
+            {
+                //validate that note and password are not null
+               await ValidatePasswordNoteInputs(note, password);
+
+                if(string.IsNullOrWhiteSpace(content)) //return an exception if content is empty
+
+                {
+                    throw new ValidationException("Please provide content");
+                }
+
+
                 //encrypt update content
                 var (cipher, salt, iv) = encryptionService.EncryptNote(content, password);
 
-               note.Encrypted_content = cipher;
-               note.Salt = salt;
-               note.IV = iv;
+                note.Encrypted_content = cipher;
+                note.Salt = salt;
+                note.IV = iv;
+
+            }catch(ValidationException) //return an exception message if password or content is missing
+            {
+                throw;
+            }
+            catch(NotFoundException)
+            {
+                throw; //return an exception message if note does not exists
+            }
+            //return a general exception if sth goes wrong
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+                
             }
         
              
