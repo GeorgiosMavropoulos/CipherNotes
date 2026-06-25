@@ -328,7 +328,7 @@ namespace Cipher_Notes.Tests
 
         //test that DecryptContent will return InvalidPasswordException (Wrong Password) if password is wrong
         [Fact]
-        public async Task Test_DecryptContent_Returns_InvalidPasswordException_If_Password_Is_Wrong()
+        public async Task Test_DecryptNote_Returns_InvalidPasswordException_If_Password_Is_Wrong()
         {
             //Arrange
             //declare variables
@@ -396,10 +396,10 @@ namespace Cipher_Notes.Tests
 
         //test DecryptContent returns CryptographicException
         [Fact]
-        public async Task Test_DecryptContent_Returns_CryptographicException()
+        public async Task Test_DecryptNote_Returns_CryptographicException()
         {
             //Arrange
-            //create a SecureNotes object
+            //create  SecureNotes object
             var note = new SecureNotes
             {
                 Id = 1,
@@ -428,6 +428,39 @@ namespace Cipher_Notes.Tests
         //Assert
         //assert that exception contains the following exception message: Decryption error
         Assert.Contains("Decryption error", ex.Message);
+        }
+
+
+
+        //test that DecryptNote returns Exception
+        [Fact]
+        public async Task Test_DecryptNote_Returns_Exception()
+        {
+            //Arrange
+            var expected_message = "Unexpected error during decryption";
+            //create SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //set up the mocked db object
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //set up the mocked encryption to throw the exception
+            mocked_encryption.Setup(x => x.DecryptContent(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("Unexpected error during decryption"));
+
+            //Act
+            //call the DecryptNote method and manipulate it to throw the Exception msg
+            var ex = await Assert.ThrowsAsync<Exception>(() => _noteService.DecryptNote(1, "pass"));
+
+            //Assert
+            //verify exception contains the expected exception message
+            Assert.Equal(expected_message, ex.Message);
         }
     }
 }
