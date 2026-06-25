@@ -347,7 +347,8 @@ namespace Cipher_Notes.Tests
             //create the mocked db object and return the note
             mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
-            //create the mocked encryption object and set it up to return "note" if sb calls DecryptContent. Add the correct password
+            //create the mocked encryption object and set it up to return the InvalidPasswordException
+            //if sb calls DecryptContent. Add the correct password
             mocked_encryption.Setup(x => x.DecryptContent("cipher", pass, "salt", "iv")).Throws(new InvalidPasswordException("Wrong Password"));
 
             //Act
@@ -359,6 +360,37 @@ namespace Cipher_Notes.Tests
             //Assert
             //verify the exception message is equals to expected_ex_message (Wrong Password)
             Assert.Equal(expected_ex_message, ex.Message);
+        }
+
+        //test that DecryptContent successfully returns NotFoundException
+        [Fact]
+        public async Task Test_DecryptContent_Returns_NotFoundException()
+        {
+            //Arrange
+            //Create secure notes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create the mocked db object and return the note
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+
+            //create the mocked encryption onject and set it up to throw a NotFoundException
+            mocked_encryption.Setup(x => x.DecryptContent("cipher", "pass", "salt", "iv")).Throws(new NotFoundException("Note not found"));
+
+            //Act 
+            //call decryptContent method and use an invali id
+            //Assert the expected exception
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.DecryptNote(5, "pass"));
+
+            //Assert
+            //verify exception message is equals to: Note does not exists
+            Assert.Equal("Note not found", ex.Message);
         }
     }
 }
