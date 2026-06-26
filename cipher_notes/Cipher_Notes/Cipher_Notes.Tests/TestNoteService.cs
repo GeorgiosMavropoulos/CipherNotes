@@ -552,5 +552,46 @@ namespace Cipher_Notes.Tests
         
         }
 
+        //test UpdateNote successfully returns ValidationException if title is missing
+        [Fact]
+        public async Task Test_UpdateNote_Returns_ValidationException_if_Title_Is_Missing()
+        {
+            //Arrange
+            //declare variables
+            var content = "string";
+            var title = string.Empty;
+            var pass = "pass";
+            var exception_message = "Title is empty";
+
+            //create a secure Notes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create a mocked db object
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //create a mocked encryption object to decrypt content
+            mocked_encryption.Setup
+                (x => x.DecryptContent(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns("Decrypted note");
+
+            //encrypt updated note via encrypt mocked object
+            mocked_encryption.Setup(x => x.EncryptNote(content, pass)).Throws(new ValidationException("Title is empty"));
+
+
+            //Act
+            // call UpdateNote method and return the exception's result in a variable
+            var ex = await Assert.ThrowsAsync<ValidationException>(() => _noteService.UpdateNote(1, title, content, pass));
+
+            //Assert 
+            //verify that exception message is 'Title is empty'
+            Assert.Equal(exception_message, ex.Message);
+
+        }
+
     }
 }
