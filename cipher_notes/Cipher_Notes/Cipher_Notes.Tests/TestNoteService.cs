@@ -5,6 +5,7 @@ using Cipher_Notes.Core.Services;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using System.Text;
@@ -677,6 +678,24 @@ namespace Cipher_Notes.Tests
             //Assert
             //verify that exception message is equals to 'Wrong password'
             Assert.Equal(exception_message, ex.Message);
+        }
+
+        //test UpdateNote returns NotFoundException if requested note does not exist
+        [Fact]
+        public async Task Test_UpdateNote_Returns_NotFoundException_If_Note_Does_Not_Exist()
+        {
+            //Arrange
+
+            //declare variables
+            var expected_message = "Note not found";
+                     
+
+            //Act
+            //call the UpdateNot method using a non existent note
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.UpdateNote(2,"title","content", "pass"));
+
+            //Assert that Exception message is equals to expected_message
+            Assert.Equal(expected_message, ex.Message);
         }
     }
 }

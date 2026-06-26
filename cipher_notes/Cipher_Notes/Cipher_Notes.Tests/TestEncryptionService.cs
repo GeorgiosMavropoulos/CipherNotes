@@ -372,7 +372,7 @@ namespace Cipher_Notes.Tests
 
             //Assert
             //Assert that decrypted content is equals to content
-                        Assert.Equal(content, decrypted_content);
+            Assert.Equal(content, decrypted_content);
         }
 
     }
