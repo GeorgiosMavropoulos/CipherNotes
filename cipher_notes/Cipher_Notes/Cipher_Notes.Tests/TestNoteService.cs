@@ -464,6 +464,11 @@ namespace Cipher_Notes.Tests
         }
 
 
+
+        
+        /// -------------------UpdateNote NoteService---------------------------------------///
+        
+
         //test that update note updates the note successfully
         [Fact]
         public async Task Test_UpdateNote_updates_note_successfully()
@@ -600,7 +605,7 @@ namespace Cipher_Notes.Tests
             //Arrange
             //declare variables
             var content = "string";
-            var title = "pass";
+            var title = "title";
             var pass = string.Empty;
             var exception_message = "Password is missing";
 
@@ -632,6 +637,46 @@ namespace Cipher_Notes.Tests
             //verify that exception message is 'Title is empty'
             Assert.Equal(exception_message, ex.Message);
 
+        }
+
+        //test that UpdateNote returns InvalidPasswordException if password is wrong
+        [Fact]
+        public async Task Test_UpdateNote_Returns_InvalidPasswordException_if_Password_Is_Wrong()
+        {
+            //Arrange
+            //Arrange
+            //declare variables
+            var content = "string";
+            var title = "title";
+            var pass = "pass";
+            var wrong_pass = "wrong_pass";
+            var exception_message = "Wrong password";
+
+            //create a secure Notes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+           
+            //create a mocked db object
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //create a mocked encryption object to decrypt content
+            mocked_encryption.Setup
+           (x => x.DecryptContent(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+           .Throws(new InvalidPasswordException("Wrong password"));
+
+            //Act
+            //return an InvalidPasswordException by adding a wrong pass
+            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(() => _noteService.UpdateNote(1,title,content, wrong_pass));
+
+            //Assert
+            //verify that exception message is equals to 'Wrong password'
+            Assert.Equal(exception_message, ex.Message);
         }
     }
 }
