@@ -210,7 +210,7 @@ namespace Cipher_Notes.Core.Services
                 }
                 catch(CryptographicException)
                 {
-                  throw new CryptographicException($"Cryptographic process failed");//return Cryptographic exception if decryption or encryption fails
+                  throw;//return Cryptographic exception if decryption or encryption fails
                 }
                 catch (Exception ex)
                 {
@@ -250,6 +250,10 @@ namespace Cipher_Notes.Core.Services
             catch(NotFoundException)
             {
                 throw; //return an exception message if note does not exists
+            }
+            catch(CryptographicException ex) // if encryption fail, return an exception
+            {
+                throw new CryptographicException("Encryption failed", ex.Message);
             }
             //return a general exception if sth goes wrong
             catch(Exception ex)
