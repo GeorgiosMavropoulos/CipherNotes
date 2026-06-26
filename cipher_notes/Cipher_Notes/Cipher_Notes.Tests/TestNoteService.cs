@@ -462,5 +462,44 @@ namespace Cipher_Notes.Tests
             //verify exception contains the expected exception message
             Assert.Equal(expected_message, ex.Message);
         }
+
+
+        //test that update note updates the note successfully
+        [Fact]
+        public async Task Test_UpdateNote_updates_note_successfully()
+        {
+            //Arrange
+            //declare variables
+            var original_note = "original";
+            var original_title = "original title";
+            var updated_note = "updated_note";
+            var updated_title = "updated_title";
+            var pass = "1234";
+
+            //create a secure notes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = original_note,
+                Salt = "salt",
+                IV = "iv"
+
+            };
+
+            //created a mocked db object and return note
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //encrypt via mocked_encryption the object
+            mocked_encryption.Setup(x => x.EncryptNote(original_note, pass)).Returns(("cipherText", "salt", "IV"));
+
+            //Act
+            //call UpdateNote and save data into a new var
+             await _noteService.UpdateNote(1,updated_title,updated_note,pass);
+
+
+            //Assert    
+            //Assert that the method in the DB has been called once
+            mocked_db.Verify(x => x.Update(It.IsAny<SecureNotes>()), Times.Once());
+        }
     }
 }
