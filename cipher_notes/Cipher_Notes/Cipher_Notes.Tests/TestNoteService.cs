@@ -471,7 +471,7 @@ namespace Cipher_Notes.Tests
             //Arrange
             //declare variables
             var original_note = "original";
-            var original_title = "original title";
+            
             var updated_note = "updated_note";
             var updated_title = "updated_title";
             var pass = "1234";
@@ -489,8 +489,17 @@ namespace Cipher_Notes.Tests
             //created a mocked db object and return note
             mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
+
+               //call the decrypt content method
+               mocked_encryption.Setup(x => x.DecryptContent(
+                   It.IsAny<string>(),
+                   It.IsAny<string>(),
+                   It.IsAny<string>(),
+                   It.IsAny<string>()
+               )).Returns("original decrypted content");
+
             //encrypt via mocked_encryption the object
-            mocked_encryption.Setup(x => x.EncryptNote(original_note, pass)).Returns(("cipherText", "salt", "IV"));
+            mocked_encryption.Setup(x => x.EncryptNote(It.IsAny<string>(), It.IsAny<string>())).Returns(("cipherText", "salt", "IV"));
 
             //Act
             //call UpdateNote and save data into a new var
@@ -501,5 +510,47 @@ namespace Cipher_Notes.Tests
             //Assert that the method in the DB has been called once
             mocked_db.Verify(x => x.Update(It.IsAny<SecureNotes>()), Times.Once());
         }
+
+        //test UpdateNote successfully returns ValidationException if content is missing
+        [Fact]
+        public async Task Test_UpdateNote_Returns_ValidationException_if_Content_Is_Missing()
+        {
+            //Arrange
+            //declare variables
+            var content = string.Empty;
+            var title = "title";
+            var pass = "pass";
+            var exception_message = "Content is empty";
+
+            //create a secure Notes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create a mocked db object
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //create a mocked encryption object to decrypt content
+            mocked_encryption.Setup
+                (x => x.DecryptContent(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns("Decrypted note");
+
+            //encrypt updated note via encrypt mocked object
+            mocked_encryption.Setup(x => x.EncryptNote(content, pass)).Throws(new ValidationException("Content is empty"));
+
+
+            //Act
+            // call UpdateNote method and return the exception's result in a variable
+            var ex = await Assert.ThrowsAsync<ValidationException>(() => _noteService.UpdateNote(1, title, content, pass));
+
+            //Assert 
+            //verify that exception message is 'Title is empty'
+            Assert.Equal(exception_message, ex.Message);
+        
+        }
+
     }
 }
