@@ -697,5 +697,42 @@ namespace Cipher_Notes.Tests
             //Assert that Exception message is equals to expected_message
             Assert.Equal(expected_message, ex.Message);
         }
+
+
+        //test UpdateNote returns CryptographicException if Decryption fail
+        [Fact]
+        public async Task Test_UpdateNote_Returns_CryptographicException_If_Decryption_Fail()
+        {
+            //Arrange
+            //declare variables
+            var excepted_ex_message = "Cryptographic process failed";
+
+            //create SecureNotes object
+
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "test",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //set up db to return the fake object when note with id 1 is being requested
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
+
+            //set up mocked_encryption object to return the CryptographicException via DecryptNote method
+            mocked_encryption.Setup(x => x.DecryptContent(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+             .Throws(new CryptographicException(excepted_ex_message));
+
+            //Act
+            //call update note and store the exception result's value in a variable/ Manipulate it to return the exception
+            var ex = await Assert.ThrowsAsync<CryptographicException>
+                (() => _noteService.UpdateNote(1, "title", "content", "pass"));
+
+
+            //Assert
+            //verify exception messages is:Cryptographic process failed
+            Assert.Equal(excepted_ex_message,ex.Message);
+        }
     }
 }

@@ -208,9 +208,9 @@ namespace Cipher_Notes.Core.Services
                 {
                     throw;//throw exception if note has not been found
                 }
-                catch(CryptographicException ex)
+                catch(CryptographicException)
                 {
-                  throw new CryptographicException($"{ex.Message}");//return Cryptographic exception if decryption or encryption fails
+                  throw new CryptographicException($"Cryptographic process failed");//return Cryptographic exception if decryption or encryption fails
                 }
                 catch (Exception ex)
                 {
