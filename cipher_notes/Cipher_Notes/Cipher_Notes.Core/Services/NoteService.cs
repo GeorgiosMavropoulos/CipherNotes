@@ -232,7 +232,7 @@ namespace Cipher_Notes.Core.Services
                 if(string.IsNullOrWhiteSpace(content)) //return an exception if content is empty
 
                 {
-                    throw new ValidationException("Please provide content");
+                    throw new ValidationException("Content is empty");
                 }
 
 
