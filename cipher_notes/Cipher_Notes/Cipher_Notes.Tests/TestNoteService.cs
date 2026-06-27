@@ -974,7 +974,7 @@ namespace Cipher_Notes.Tests
             await _noteService.Delete(1);
 
             //Assert
-            //verify that Delete method from db service has been called once
+            //verify that Delete method from db service has been called  once to make sure method works
             mocked_db.Verify(x => x.Delete(1), Times.Once());
         }
 
