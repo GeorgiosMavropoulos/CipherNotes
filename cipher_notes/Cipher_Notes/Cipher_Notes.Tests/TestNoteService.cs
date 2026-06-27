@@ -910,7 +910,40 @@ namespace Cipher_Notes.Tests
             var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.ApplyEncryption(note, content, password));
 
             //Assert
-            //verify exception message is equals to expected_exception_message(Not does not exist)
+            //verify exception message is equals to expected_exception_message(Note does not exist)
+            Assert.Equal(expected_exception_message, ex.Message);
+        } 
+        
+        //test that AppleyEncryption returns successfully CryptographicException
+        [Fact]
+        public async Task Test_that_AppleyEncryption_Returns_Successfully_CryptographicException()
+        {
+            //Arrange
+
+            //declare variables
+            var content = "test";
+            var password = "test";
+            var expected_exception_message = "Encryption failed";
+
+            //create SecureNotes object
+            //create SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+
+            //create a mocked encryption object and manipulate it to return NotFoundException
+            mocked_encryption.Setup(x => x.EncryptNote(content, password)).Throws(new CryptographicException("Encryption failed"));
+
+            //Act
+            var ex = await Assert.ThrowsAsync<CryptographicException>(() => _noteService.ApplyEncryption(note, content, password));
+
+            //Assert
+            //verify exception message is equals to expected_exception_message(Encryption failed)
             Assert.Equal(expected_exception_message, ex.Message);
         }
     }
