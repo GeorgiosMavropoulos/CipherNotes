@@ -705,7 +705,7 @@ namespace Cipher_Notes.Tests
         {
             //Arrange
             //declare variables
-            var excepted_ex_message = "Cryptographic process failed";
+            var excepted_ex_message = "Decryption error";
 
             //create SecureNotes object
 
@@ -851,6 +851,38 @@ namespace Cipher_Notes.Tests
 
             //Assert
             //verify exception message is equals to expected_exception_message(Password is missing)
+            Assert.Equal(expected_exception_message, ex.Message);
+        }
+
+        //test ApplyEncryption returns ValidationException if content is missing:Message should be Content is missing
+        [Fact]
+        public async Task Test_ApplyEncryption_Returns_ValidationException_If_Content_Is_Empty()
+        {
+            //Arrange
+
+            //declare variables
+            var content = string.Empty;
+            var password = "test";
+            var expected_exception_message = "Content is missing";
+
+            //create SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create a mocked encryption object and manipulate it to return ValidationException
+            mocked_encryption.Setup(x => x.EncryptNote(content, password)).Throws(new ValidationException("Content is missing"));
+
+            //Act
+            //call ApplyEncryption and wrap it into an exception variable
+            var ex = await Assert.ThrowsAsync<ValidationException>(() => _noteService.ApplyEncryption(note, content, password));
+
+            //Assert
+            //verify exception message is equals to expected_exception_message(Content is missing)
             Assert.Equal(expected_exception_message, ex.Message);
         }
     }
