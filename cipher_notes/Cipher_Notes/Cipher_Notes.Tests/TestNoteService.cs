@@ -776,5 +776,50 @@ namespace Cipher_Notes.Tests
             //verify exception messages is:Cryptographic process failed
             Assert.Equal(excepted_ex_message, ex.Message);
         }
+
+
+
+        //-----------------------------ApplyEncryption-------------------------------------------//
+
+        //test ApplyEncryption successfully encrypts note--
+        [Fact]
+        public async Task Test_ApplyEncryption_Successfully_Encrypts_Note()
+        {
+            //Arrange
+            //Declare variables
+            var content = "test";
+            var pass = "pass";
+
+            //create SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+
+            //create mocked_encryption
+            mocked_encryption.Setup(x => x.EncryptNote(content, pass)).Returns(("newCipher","newSalt","newIV"));
+
+            //Act
+            //encryptnote
+            await _noteService.ApplyEncryption(note, content, pass);
+
+
+            //Assert
+            //verify EncryptNote has been called once
+            mocked_encryption.Verify(x=> x.EncryptNote(content,pass),Times.Once());
+
+            //verify that newCipher is equals to note.Encrypted_content
+            Assert.Equal("newCipher", note.Encrypted_content);
+
+            //verify newSalt is equals to note.Salt
+            Assert.Equal("newSalt", note.Salt);
+
+            //verify newIV is equals to note.IV
+            Assert.Equal("newIV", note.IV);
+        }
     }
 }
