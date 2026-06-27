@@ -978,5 +978,36 @@ namespace Cipher_Notes.Tests
             mocked_db.Verify(x => x.Delete(1), Times.Once());
         }
 
+        //Test Delete returns NotFoundException if note does not exist
+        [Fact]
+        public async Task Test_Delete_Returns_NotFoundException_If_Note_Does_Not_Exist()
+        {
+            //Arrange
+            var id = 1;
+            var exception_message = "Note not found";
+
+            //create a new note
+            var note = new SecureNotes
+            {
+                Id = 2,
+                Encrypted_content = "test",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create a mocked_db object to test deletion
+            mocked_db.Setup(x => x.GetById(1)).Throws(new NotFoundException("Note not found"));  //set up mocked_db to return the note
+
+            //Act
+            //declare a variable and as a value assign Delete method from NoteService. Manipulate the variable to return NotFoundException
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.Delete(id));
+
+
+            //Assert
+            //Verify exception_message is equals to NotFoundException's message
+            Assert.Equal(exception_message, ex.Message);
+        
+        }
+
     }
 }
