@@ -161,7 +161,7 @@ namespace Cipher_Notes.Core.Services
             }
             else if (note == null)
             {
-                throw new NotFoundException("Note does not exists");
+                throw new NotFoundException("Note does not exist");
             }
         }
 
