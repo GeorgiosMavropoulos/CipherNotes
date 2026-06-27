@@ -51,7 +51,7 @@ namespace Cipher_Notes.Tests
 
             //Assert
             //verify that database.Create method from NoteService has been called once
-            mocked_db.Verify(x => x.Create(It.IsAny<SecureNotes>()),Times.Once);
+            mocked_db.Verify(x => x.Create(It.IsAny<SecureNotes>()), Times.Once);
 
 
 
@@ -68,7 +68,7 @@ namespace Cipher_Notes.Tests
 
             //Act and Assert
             //call the CreateNote method using _noteService object. Assert that ValidationException will be returned
-            var exception = await Assert.ThrowsAsync<ValidationException>(()=> _noteService.CreateNote(title, content, password));
+            var exception = await Assert.ThrowsAsync<ValidationException>(() => _noteService.CreateNote(title, content, password));
 
             //Assert
             //Assert that error message is equals to Title is empty
@@ -77,7 +77,7 @@ namespace Cipher_Notes.Tests
 
         //test that CreateNote returns validation exception with the correct message when user does not insert content
         [Fact]
-        public async Task Test_CreateNote_Returns_ValidationException_When_Content_Missing() 
+        public async Task Test_CreateNote_Returns_ValidationException_When_Content_Missing()
         {
             //Arrange 
             var title = "test";
@@ -121,10 +121,10 @@ namespace Cipher_Notes.Tests
             //
             //Arrange
             //add a single note called title inside the db with a mocked object
-            mocked_db.Setup(x => x.GetSecureNotes()).ReturnsAsync(new List<SecureNotes> {new SecureNotes { Title = "title"} });
+            mocked_db.Setup(x => x.GetSecureNotes()).ReturnsAsync(new List<SecureNotes> { new SecureNotes { Title = "title" } });
 
-           //Act
-            
+            //Act
+
             //call GetAllNotes method to return the note
             var result = await _noteService.GetAllNotes();
 
@@ -154,7 +154,7 @@ namespace Cipher_Notes.Tests
             //Assert that the list has been returned
             Assert.NotNull(result);
             //Assert that result is empty
-            Assert.Empty(result);   
+            Assert.Empty(result);
         }
 
         //test that the NoteService allows the exception of GetAllNotes to be returned
@@ -166,9 +166,9 @@ namespace Cipher_Notes.Tests
             mocked_db.Setup(x => x.GetSecureNotes()).ThrowsAsync(new Exception("Db error"));
 
             //Act 
-            var service = new NoteService(mocked_db.Object,mocked_encryption.Object);
+            var service = new NoteService(mocked_db.Object, mocked_encryption.Object);
             //call the method to return the exception
-            var ex = await Assert.ThrowsAsync<Exception>(()=> service.GetAllNotes());
+            var ex = await Assert.ThrowsAsync<Exception>(() => service.GetAllNotes());
 
             //Assert that the the exception message is equals to 'Failed to get notes'
             Assert.Equal("Failed to get notes", ex.Message);
@@ -203,7 +203,7 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expectedNote.Id, note.Id);
 
             //verify that the db has been called
-            mocked_db.Verify(x=> x.GetById(1), Times.Once());
+            mocked_db.Verify(x => x.GetById(1), Times.Once());
         }
 
 
@@ -217,9 +217,9 @@ namespace Cipher_Notes.Tests
 
             //Act
             //try to retrieve note
-            var ex = await Assert.ThrowsAsync<NotFoundException>(()=> _noteService.GetNoteById(1));
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.GetNoteById(1));
 
-            
+
             //Assert
             ////verify that the proper exception will be returned
             Assert.Equal("Note not found", ex.Message);
@@ -236,20 +236,20 @@ namespace Cipher_Notes.Tests
         {
             //Arrange
             //create a mocked db object in order to create a note
-            mocked_db.Setup(x=> x.GetById(It.IsAny<int>())).ThrowsAsync(new Exception("DB error"));
+            mocked_db.Setup(x => x.GetById(It.IsAny<int>())).ThrowsAsync(new Exception("DB error"));
 
             //Act
-            var service =  new NoteService(mocked_db.Object, mocked_encryption.Object);
+            var service = new NoteService(mocked_db.Object, mocked_encryption.Object);
 
             //call the method to return the exception
-            var exception = await Assert.ThrowsAsync<Exception>(()=>service.GetNoteById(1));
+            var exception = await Assert.ThrowsAsync<Exception>(() => service.GetNoteById(1));
 
             //Assert
             //verify that the expected message will be: Failed to get note
-            Assert.Equal("Failed to get note",exception.Message);
+            Assert.Equal("Failed to get note", exception.Message);
 
             //verify the DB has been called
-            mocked_db.Verify(x=> x.GetById(1),Times.Once());
+            mocked_db.Verify(x => x.GetById(1), Times.Once());
         }
 
         //----------------------- TEST DecryptNote method-----------------------------------------//
@@ -261,16 +261,16 @@ namespace Cipher_Notes.Tests
             //Arrange            
             //create a new SecureNotes object
             var note = new SecureNotes
-            { 
-              Id = 1,
-              Encrypted_content = "cipher",
-              Salt = "salt",
-              IV = "iv"
+            {
+                Id = 1,
+                Encrypted_content = "cipher",
+                Salt = "salt",
+                IV = "iv"
 
             };
 
             //create the mocked db object and return note
-            mocked_db.Setup(x=> x.GetById(1)).ReturnsAsync(note);
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
             //set up the mocked decryption. This mocked encryption returns "note" if anyone calls the DecryptContent method
             mocked_encryption.Setup(x => x.DecryptContent("cipher", "pass", "salt", "iv")).Returns("note");
@@ -283,7 +283,7 @@ namespace Cipher_Notes.Tests
             Assert.Equal("note", decrypted_content);
 
             //verify that DB has been called at least once
-            
+
             mocked_db.Verify(x => x.GetById(1), Times.Once());
 
             //verify that DecryptContent has been called
@@ -318,7 +318,7 @@ namespace Cipher_Notes.Tests
 
             //Act
             //Call DecryptNote with nullified pass
-            var ex = await Assert.ThrowsAsync<ValidationException>(()=> _noteService.DecryptNote(1, pass));
+            var ex = await Assert.ThrowsAsync<ValidationException>(() => _noteService.DecryptNote(1, pass));
 
 
             //Assert
@@ -333,7 +333,7 @@ namespace Cipher_Notes.Tests
         {
             //Arrange
             //declare variables
-            
+
             var pass = "wrong pass";
             var expected_ex_message = "Wrong Password";
 
@@ -357,7 +357,7 @@ namespace Cipher_Notes.Tests
             //call DecryptContent and decrypt with a falsed password
             //declare it as exception to compare later
             //Assert the expected exception
-            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(()=>_noteService.DecryptNote(1, pass));
+            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(() => _noteService.DecryptNote(1, pass));
 
             //Assert
             //verify the exception message is equals to expected_ex_message (Wrong Password)
@@ -420,15 +420,15 @@ namespace Cipher_Notes.Tests
                It.IsAny<string>(),
                 It.IsAny<string>()
             )).Throws(new CryptographicException("Decryption failed"));
-        
 
-        //Act
-        //call the DecryptContent method and manipulate it to return CryptographicException
-        var ex = await Assert.ThrowsAsync<CryptographicException>(() => _noteService.DecryptNote(1, "wrongpassword"));
 
-        //Assert
-        //assert that exception contains the following exception message: Decryption error
-        Assert.Contains("Decryption error", ex.Message);
+            //Act
+            //call the DecryptContent method and manipulate it to return CryptographicException
+            var ex = await Assert.ThrowsAsync<CryptographicException>(() => _noteService.DecryptNote(1, "wrongpassword"));
+
+            //Assert
+            //assert that exception contains the following exception message: Decryption error
+            Assert.Contains("Decryption error", ex.Message);
         }
 
 
@@ -466,9 +466,9 @@ namespace Cipher_Notes.Tests
 
 
 
-        
+
         /// -------------------UpdateNote NoteService---------------------------------------///
-        
+
 
         //test that update note updates the note successfully
         [Fact]
@@ -477,7 +477,7 @@ namespace Cipher_Notes.Tests
             //Arrange
             //declare variables
             var original_note = "original";
-            
+
             var updated_note = "updated_note";
             var updated_title = "updated_title";
             var pass = "1234";
@@ -496,20 +496,20 @@ namespace Cipher_Notes.Tests
             mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
 
-               //call the decrypt content method
-               mocked_encryption.Setup(x => x.DecryptContent(
-                   It.IsAny<string>(),
-                   It.IsAny<string>(),
-                   It.IsAny<string>(),
-                   It.IsAny<string>()
-               )).Returns("original decrypted content");
+            //call the decrypt content method
+            mocked_encryption.Setup(x => x.DecryptContent(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()
+            )).Returns("original decrypted content");
 
             //encrypt via mocked_encryption the object
             mocked_encryption.Setup(x => x.EncryptNote(It.IsAny<string>(), It.IsAny<string>())).Returns(("cipherText", "salt", "IV"));
 
             //Act
             //call UpdateNote and save data into a new var
-             await _noteService.UpdateNote(1,updated_title,updated_note,pass);
+            await _noteService.UpdateNote(1, updated_title, updated_note, pass);
 
 
             //Assert    
@@ -555,7 +555,7 @@ namespace Cipher_Notes.Tests
             //Assert 
             //verify that exception message is 'Title is empty'
             Assert.Equal(exception_message, ex.Message);
-        
+
         }
 
         //test UpdateNote successfully returns ValidationException if title is missing
@@ -662,7 +662,7 @@ namespace Cipher_Notes.Tests
                 IV = "iv"
             };
 
-           
+
             //create a mocked db object
             mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);
 
@@ -673,7 +673,7 @@ namespace Cipher_Notes.Tests
 
             //Act
             //return an InvalidPasswordException by adding a wrong pass
-            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(() => _noteService.UpdateNote(1,title,content, wrong_pass));
+            var ex = await Assert.ThrowsAsync<InvalidPasswordException>(() => _noteService.UpdateNote(1, title, content, wrong_pass));
 
             //Assert
             //verify that exception message is equals to 'Wrong password'
@@ -688,11 +688,11 @@ namespace Cipher_Notes.Tests
 
             //declare variables
             var expected_message = "Note not found";
-                     
+
 
             //Act
             //call the UpdateNot method using a non existent note
-            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.UpdateNote(2,"title","content", "pass"));
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => _noteService.UpdateNote(2, "title", "content", "pass"));
 
             //Assert that Exception message is equals to expected_message
             Assert.Equal(expected_message, ex.Message);
@@ -732,7 +732,7 @@ namespace Cipher_Notes.Tests
 
             //Assert
             //verify exception messages is:Cryptographic process failed
-            Assert.Equal(excepted_ex_message,ex.Message);
+            Assert.Equal(excepted_ex_message, ex.Message);
         }
 
 
@@ -760,10 +760,10 @@ namespace Cipher_Notes.Tests
             //set up mocked_encryption object to return the CryptographicException via DecryptNote method
             mocked_encryption.Setup(x => x.DecryptContent(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns("decrypted content");
-             
+
 
             //encrypt via mocked_encryption object
-            mocked_encryption.Setup(x=> x.EncryptNote(It.IsAny<string>(), It.IsAny<string>()))
+            mocked_encryption.Setup(x => x.EncryptNote(It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(new CryptographicException(excepted_ex_message));
 
             //Act
@@ -801,7 +801,7 @@ namespace Cipher_Notes.Tests
 
 
             //create mocked_encryption
-            mocked_encryption.Setup(x => x.EncryptNote(content, pass)).Returns(("newCipher","newSalt","newIV"));
+            mocked_encryption.Setup(x => x.EncryptNote(content, pass)).Returns(("newCipher", "newSalt", "newIV"));
 
             //Act
             //encryptnote
@@ -810,7 +810,7 @@ namespace Cipher_Notes.Tests
 
             //Assert
             //verify EncryptNote has been called once
-            mocked_encryption.Verify(x=> x.EncryptNote(content,pass),Times.Once());
+            mocked_encryption.Verify(x => x.EncryptNote(content, pass), Times.Once());
 
             //verify that newCipher is equals to note.Encrypted_content
             Assert.Equal("newCipher", note.Encrypted_content);
@@ -847,7 +847,7 @@ namespace Cipher_Notes.Tests
 
             //Act
             //call ApplyEncryption and wrap it into an exception variable
-            var ex = await Assert.ThrowsAsync<ValidationException>(()=>_noteService.ApplyEncryption(note,content, password));
+            var ex = await Assert.ThrowsAsync<ValidationException>(() => _noteService.ApplyEncryption(note, content, password));
 
             //Assert
             //verify exception message is equals to expected_exception_message(Password is missing)
@@ -912,8 +912,8 @@ namespace Cipher_Notes.Tests
             //Assert
             //verify exception message is equals to expected_exception_message(Note does not exist)
             Assert.Equal(expected_exception_message, ex.Message);
-        } 
-        
+        }
+
         //test that AppleyEncryption returns successfully CryptographicException
         [Fact]
         public async Task Test_that_AppleyEncryption_Returns_Successfully_CryptographicException()
@@ -946,5 +946,37 @@ namespace Cipher_Notes.Tests
             //verify exception message is equals to expected_exception_message(Encryption failed)
             Assert.Equal(expected_exception_message, ex.Message);
         }
+
+
+
+        //-----------------------------------------------------------------Delete-----------------------------/////
+
+        //test that Delete from NoteService successfully deletes notes
+        [Fact]
+        public async Task Test_Delete_Sucessfully_Deletes_Notes()
+        {
+            //Arrange
+
+            //create a new note
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Encrypted_content = "test",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //create a mocked_db object to test deletion
+            mocked_db.Setup(x => x.GetById(1)).ReturnsAsync(note);  //set up mocked_db to return the note
+
+            //Act
+            //Call the Delete from NoteService to delete the mocked note
+            await _noteService.Delete(1);
+
+            //Assert
+            //verify that Delete method from db service has been called once
+            mocked_db.Verify(x => x.Delete(1), Times.Once());
+        }
+
     }
 }
