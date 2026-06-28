@@ -58,6 +58,17 @@ namespace Cipher_Notes.Core.Services
             _connection = new SQLiteAsyncConnection(dbPath); //initialize the connection
         }
 
+        //create this method in order to terminate connection after each db process.For instance, when a note is being created, connection should be closed.
+        //Otherwise it's difficult for intergration tests to work, because connection is still open
+        public async Task CloseAsync()
+        {
+            if (_connection != null)
+            {
+                await _connection.CloseAsync();
+                _connection = null;
+                initialized = false;
+            }
+        }
 
         //create crud operations for the DB
 

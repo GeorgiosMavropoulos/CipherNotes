@@ -14,7 +14,7 @@ using System.Text;
 namespace Cipher_Notes.Tests
 {
     //unit tests for DatabseService
-    public class TestDatabaseService: IDisposable
+    public class TestDatabaseService: IAsyncLifetime, IDisposable
     {
         //declare variables
         private readonly DatabaseService dbService; //create a new db service object
@@ -23,6 +23,8 @@ namespace Cipher_Notes.Tests
         //declare constructor
         public TestDatabaseService()
         {
+
+           
             //create a unique temporary db object for each test
             testDbPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.db");//use Guid to get a new different db object each time.
            
@@ -32,14 +34,22 @@ namespace Cipher_Notes.Tests
 
          }
 
+       
+
         //create the Dispose() method to delete temp db path after each test
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            if(File.Exists(testDbPath))
+            //close sqlite connection
+            await dbService.CloseAsync();
+
+            if (File.Exists(testDbPath))
             {
                 File.Delete(testDbPath);//delete file
             }
         }
+        public void Dispose() { }//empty dispose is charged to delete temp paths and terminate connection
+
+        public Task InitializeAsync() => Task.CompletedTask;//re-open connection for a new test
 
         //-------------Test Create----------------------------//
         [Fact]
