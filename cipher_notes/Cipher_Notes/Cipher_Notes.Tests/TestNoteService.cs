@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Cipher_Notes.Tests
 {
-    //unit tests for NotService
+    //unit tests for NoteService
     public class TestNoteService
     {
 

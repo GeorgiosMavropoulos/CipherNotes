@@ -12,10 +12,14 @@ namespace Cipher_Notes.Core.Interfaces
         //create some Tasks for all DatabaseService's methods
         Task Create(SecureNotes securenote);// creating a task for note creation
 
-        Task<List<SecureNotes>> GetSecureNotes();
-        Task<SecureNotes?> GetById(int id);
-        Task Update(SecureNotes note);
-        Task Delete(int id);
+        Task<List<SecureNotes>> GetSecureNotes();//create a task for retrieving all notes
+        Task<SecureNotes?> GetById(int id); //task to retrieve a specific note
+        Task Update(SecureNotes note);//task to update notes
+        Task Delete(int id);//deletion task
+        
+        //task to initialize connection
         Task InitAsync();
+
+        Task CloseAsync();//task to close connection
     }
 }
