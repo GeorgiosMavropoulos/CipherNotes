@@ -37,17 +37,11 @@ namespace Cipher_Notes.ViewModels
         [RelayCommand]
         public async Task CreateNote()
         {
-            //try-catch to handle unexpected errors
-            try
-            {
+           
+            //call create note method from NoteService to create the note
                 await note_service.CreateNote(Title, Content, Password);
-            }
-            catch (Exception ex)
-            {
-                //display an error alert in UI
-                throw;
-
-            }
+          
+          
 
         }
     }

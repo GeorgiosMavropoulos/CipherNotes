@@ -29,6 +29,10 @@ namespace Cipher_Notes
             builder.Services.AddTransient<IEncryptionService, EncryptionService>();
             builder.Services.AddTransient<INoteService, NoteService>();
             builder.Services.AddTransient<IDialogService, DialogService>();
+            builder.Services.AddTransient<CreateNoteViewModel>();
+            builder.Services.AddTransient<DecryptNoteViewModel>();
+            builder.Services.AddTransient<NoteListViewModel>();
+            builder.Services.AddTransient<UpdateNoteViewModel>();
 
             builder.Services.AddMauiBlazorWebView();
 
