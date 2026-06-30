@@ -14,7 +14,7 @@ using System.Text;
 namespace Cipher_Notes.Tests
 {
     //unit tests for DatabseService
-    public class TestDatabaseService: IAsyncLifetime, IDisposable
+    public class TestDatabaseService : IAsyncLifetime, IDisposable
     {
         //declare variables
         private readonly DatabaseService dbService; //create a new db service object
@@ -24,17 +24,17 @@ namespace Cipher_Notes.Tests
         public TestDatabaseService()
         {
 
-           
+
             //create a unique temporary db object for each test
             testDbPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.db");//use Guid to get a new different db object each time.
-           
+
             //initialize a new db object for each test and assign the temp path
-            dbService = new DatabaseService(testDbPath);     
-            
+            dbService = new DatabaseService(testDbPath);
 
-         }
 
-       
+        }
+
+
 
         //create the Dispose() method to delete temp db path after each test
         public async Task DisposeAsync()
@@ -112,24 +112,78 @@ namespace Cipher_Notes.Tests
                 Salt = "salt",
                 IV = "iv",
                 Created_at = DateTime.Now
-                
+
             };
 
             //set up the DB to return DatabaseException when the mocked db object is being called
-            mocked_db.Setup(x=> x.Create(note)).ThrowsAsync(new DatabaseException(exception_message,new Exception("Sql query failed")));
+            mocked_db.Setup(x => x.Create(note)).ThrowsAsync(new DatabaseException(exception_message, new Exception("Sql query failed")));
             //Act
             //close connection so as Create will fail            
             await dbService.CloseAsync();
 
             //call the Create method and return the exception inside a variable
-            var ex = await Assert.ThrowsAsync<DatabaseException>(()=> mocked_db.Object.Create(note));
+            var ex = await Assert.ThrowsAsync<DatabaseException>(() => mocked_db.Object.Create(note));
 
-            
+
 
             //Assert
             //verify exception messagei s equals to the expected one
             Assert.Equal(exception_message, ex.Message);
         }
 
+
+        //-------------------------------------------------Test Update-----------------------------------------------------//
+
+        //Intergration test.Test that Update successfully updates notes
+        [Fact]
+        public async Task Test_Update_Successfully_Updates_Notes()
+        {
+            //Arrange
+            //declare variables
+            var original_tile = "title";
+            var original_content = "content";
+            var updated_title = "updated_title";
+            var updated_content = "updated_content";
+            var salt = "salt";
+            var iv = "iv";
+
+            //create SecureNotes object 
+            var note = new SecureNotes
+            {
+                Title = original_tile,
+                Encrypted_content = original_content,
+                Salt = salt,
+                IV = iv
+            };
+
+            //Create the note
+            await dbService.Create(note);
+
+
+
+            //Act
+            //update the note
+            note.Title = updated_title;
+            note.Encrypted_content = updated_content;
+            note.Updated_at = DateTime.Now;//add update time
+
+            //call the method to update the note
+            await dbService.Update(note);
+
+            //call GetById method to retrieve note
+            var result = await dbService.GetById(note.Id);
+
+            //Assert
+            //verify result is not null
+            Assert.NotNull(result);
+
+            //verify updated note's title is equal to updated_title
+            Assert.Equal(updated_title, result.Title);
+
+            //verify updated note's content is equal to updated_content
+            Assert.Equal(updated_content, result.Encrypted_content);
+
+
+        }
     }
 }

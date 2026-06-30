@@ -179,7 +179,7 @@ namespace Cipher_Notes.Tests
         ///----------------- Test GetANoteById method --------------------//
 
 
-        //test that GetNoteById successfully retrieves the requested note
+        // Test that GetNoteById successfully retrieves the requested note
         [Fact]
         public async Task Test_GetNoteById_Returnes_The_Requested_Note()
         {
