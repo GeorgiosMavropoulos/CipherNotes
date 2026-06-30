@@ -185,5 +185,27 @@ namespace Cipher_Notes.Tests
 
 
         }
+
+        //test Update method returns ValidationException if note is null. Exception message should be:Note does not exist
+        [Fact]
+        public async Task Test_Update_Returns_ValidationException_If_Note_Is_Null()
+        {
+            //Arrange
+
+            //declare variables
+            var exception_message = "Note does not exist";
+            //Create empty note
+            SecureNotes note = null;
+
+
+            //Act
+            //call Update method and return validation exception
+            var ex = await Assert.ThrowsAsync<ValidationException>(()=>dbService.Update(note));
+
+            //Assert
+            //verify exception_message is equals to ex.Message
+            Assert.Equal(exception_message, ex.Message);
+
+        }
     }
 }
