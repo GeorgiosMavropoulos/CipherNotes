@@ -1,10 +1,11 @@
-﻿@using Cipher_Notes.Core.Models
-@using Cipher_Notes.Core.Services
+﻿
+
 @using Cipher_Notes.Core.Exceptions
 @using Cipher_Notes.Core.Interfaces
-@using Cipher_Notes.Services
+
+@using Cipher_Notes.ViewModels
 @page "/"
-@inject INoteService NoteService
+@inject NoteListViewModel note_list_view_model
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 
@@ -19,20 +20,20 @@
                     <input type="text"
                            class="search-bar"
                            placeholder="type note's title..."
-                           @bind="searchQuery"
+                           @bind="note_list_view_model.SearchQuery"
                            @bind:event="oninput" />
                     <button class="search-icon-btn" @onclick="OpenSearchResult">
                         <img src="images/search_bar_icon.svg" width="20" height="20" /> <!--search icon img-->
                     </button>
                    </div>
-                <p>@notes.Count notes encrypted</p>
+                <p>@note_list_view_model.Notes.Count notes encrypted</p>
             </div>
         </div>
     </div>
 
  
 
-    @if (notes.Count == 0)
+    @if (note_list_view_model.Notes.Count == 0)
     {
         <div class="empty-state">
             <img src="images/logo.svg" class="logo-img" />
@@ -44,7 +45,7 @@
     {
         //display all notes. Each note has a menu which is being displayed after clicking on the ... This menu provides delete/update cancel options
         <div class="notes-list">
-            @foreach (var note in FilteredNotes)
+            @foreach (var note in note_list_view_model.FilteredNotes)
             {
                 <div class="note-card" @onclick="() => ViewNote(note.Id)">
                     <div class="note-header">
@@ -69,28 +70,14 @@
 </div>
 
 @code {
-    private List<SecureNotes> notes = new();
-    private string searchQuery = "";
+   
+    
 
-    private int? openMenuId = null;
-
-    private void ToggleMenu(int id)
-    {
-        openMenuId = openMenuId == id ? null : id;
-    }
-
-    private void CloseMenu()
-    {
-        openMenuId = null;
-    }
-
-    <!-- - search query for notes for notes--->
-    private IEnumerable<SecureNotes> FilteredNotes =>
-        notes.Where(n => n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+    
 
     protected override async Task OnInitializedAsync()
     {
-        notes = await NoteService.GetAllNotes();
+        await note_list_view_model.LoadNotesCommand.ExecuteAsync(null);
     }
 
     //update note method
@@ -132,9 +119,9 @@
         if(await ConfirmDeletion())
         {
             //call delete note method
-            await NoteService.Delete(id);
+            await note_list_view_model.DeleteNoteCommand.ExecuteAsync(id);
 
-            notes = await NoteService.GetAllNotes();//renew list
+            
 
             await DialogService.ShowAlert("alert", "Note deleted!", "BACK");    //return confirmation message
         }
@@ -148,52 +135,34 @@
     //open search result method to open the note if found
     private async Task OpenSearchResult()
     {
-        //if search input has been filled
         try
         {
-            //return an error message if search input is empty
-            if (!await ValidInputSearchQuery())
+            if (!await ValidInputSearchQuery()) //return an error message if search bar is empty
             {
-                await DialogService.ShowAlert("Error", "Please fill out the search input", "BACK");  //return a message if input is empty
+                await DialogService.ShowAlert("Error", "Please fill out the search input", "BACK");
                 return;
             }
-            else if (!await SearchNote()) //else search note if exists
+
+            var match = note_list_view_model.FindNoteByTitle(note_list_view_model.SearchQuery);
+
+            if (match == null) //return an error message if note does not exist
             {
-                
-                await DialogService.ShowAlert("Error", "Note does not exist", "BACK");  //return an error message if sth goes wrong
-                    return;
-              
-              
+                await DialogService.ShowAlert("Error", "Note does not exist", "BACK");
+                return;
             }
-        }
 
-        catch (Exception ex)
+            Navigation.NavigateTo($"/note/{match.Id}"); //navigate to note's page
+        }
+        catch (Exception ex) //return exception if an error occurs
         {
-            await DialogService.ShowAlert("Error", ex.Message, "BACK");  //return an error message if sth goes wrong
-            return;
+            await DialogService.ShowAlert("Error", ex.Message, "BACK");
         }
-    }
-
-    //method to search if note exists
-    private async Task<bool> SearchNote()
-    {
-        //search note via first or default method
-        var match = notes.FirstOrDefault(n => !string.IsNullOrWhiteSpace(n.Title) && n.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
-
-        //return false if note does not exist
-        if(match == null)
-        {
-            return false;
-        }
-        //if note exists, navigate to view notes page
-        Navigation.NavigateTo($"/note/{match.Id}");
-        return true;
     }
 
     //method to validate that search query will not be empty if search btn is being clicked
     private async Task<bool> ValidInputSearchQuery()
     {
-        if(string.IsNullOrWhiteSpace(searchQuery))
+        if (string.IsNullOrWhiteSpace(note_list_view_model.SearchQuery))
         {
             return false;
         }

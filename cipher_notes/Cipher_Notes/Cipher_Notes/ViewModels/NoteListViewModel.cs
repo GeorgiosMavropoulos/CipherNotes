@@ -26,6 +26,21 @@ namespace Cipher_Notes.ViewModels
 
         }
 
+        [ObservableProperty] //search query bound for UI search bar searching
+        private string searchQuery = string.Empty;
+
+
+        //when search query changes, this method informs automatically the query
+        partial void OnSearchQueryChanged(string value)
+        {
+            OnPropertyChanged(nameof(FilteredNotes));
+        }
+
+
+        //filtering for search bar queries
+        public IEnumerable<SecureNotes> FilteredNotes =>
+            Notes.Where(n => n.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+
         //create load notes method
         [RelayCommand]
         public async Task LoadNotes()
@@ -62,8 +77,7 @@ namespace Cipher_Notes.ViewModels
                 //retrieve note by its id
                 var note = await note_service.GetNoteById(id);
 
-
-                
+                                
 
                 //return an error message if note does not exist
                 if(note != null)
@@ -84,6 +98,16 @@ namespace Cipher_Notes.ViewModels
 
             
 
+            
+
+        }
+
+        //search query implementation. Searching if query matches and navigating directly
+        public SecureNotes? FindNoteByTitle(string query)
+        {
+            return Notes.FirstOrDefault(n =>
+                !string.IsNullOrWhiteSpace(n.Title) &&
+                n.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
