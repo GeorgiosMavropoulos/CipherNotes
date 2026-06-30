@@ -126,10 +126,12 @@ namespace Cipher_Notes.Core.Services
             {
                 await _connection.InsertAsync(securenote);//insert the new object's details into the Db
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex) //return a db exception
             {
                 throw new DatabaseException("Failed to save note in the Database", ex);
             }
+           
             
         }
 
