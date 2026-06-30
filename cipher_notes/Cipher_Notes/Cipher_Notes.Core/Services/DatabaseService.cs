@@ -138,6 +138,12 @@ namespace Cipher_Notes.Core.Services
         //update a note function
         public async Task Update(SecureNotes securenote)
         {
+
+            //return an exception if note is null
+            if(securenote == null)
+            {
+                throw new ValidationException("Note does not exist");
+            }
             //call the db initialization method if connection has not been initialized
             if (!initialized)
                 await InitAsync();
@@ -150,6 +156,14 @@ namespace Cipher_Notes.Core.Services
                 if (rows == 0) //return an error message if note does not exist or not updated
                     throw new  NotFoundException("Note not found or not updated");
 
+            }
+            catch(ValidationException)
+            {
+                throw; //throw validation exxception if note is null
+            }
+            catch(NotFoundException)
+            {
+                throw; //throw NotFoundException if note is null
             }
             catch (Exception ex)
             {
