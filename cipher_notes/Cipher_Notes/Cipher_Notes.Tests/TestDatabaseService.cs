@@ -235,5 +235,39 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expected_exception, ex.Message);
 
         }
+
+        //----------------------------------------------Test Delete-----------------------------------------------///
+        //test Delete note successfully deletes notes
+        [Fact]
+        public async Task Test_Delete_Successfully_Delete_Notes()
+        {
+            //Arrange
+            var id = 1;
+
+            //create SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = id,
+                Title = "Test",
+                Encrypted_content="test",
+                Salt="Test",
+                IV= "Test",
+            };
+
+            //Create not
+            await dbService.Create(note);
+            //Act
+            //call Delete method
+            await dbService.Delete(id);
+
+            //Assert
+
+            //verify GetById(id) returns a null object
+            var retrieved_note = await  dbService.GetById(note.Id);
+
+            //assert retrieved_note is null
+            Assert.Null(retrieved_note);
+
+        }
     }
 }
