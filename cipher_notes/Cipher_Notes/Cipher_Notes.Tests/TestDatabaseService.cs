@@ -269,5 +269,25 @@ namespace Cipher_Notes.Tests
             Assert.Null(retrieved_note);
 
         }
+
+        //Test delete returns NotFoundException if id does not exist. Exception message should be `Note does not exist`
+        [Fact]
+        public async Task Test_Delete_Returns_NotFoundException_If_Id_Does_Not_Exists()
+        {
+            //Arrange
+
+            //declare variables
+            var id = 1;
+            var expected_exception_message = "Note does not exist";
+
+            //Act
+            //call Delete method and delegate it to a variable called ex.
+            //Assert it returns NotFoundException
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() => dbService.Delete(id));
+
+            //Assert
+            //Verify Delete returns the message `Note does not exist` which is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, ex.Message);
+        }
     }
 }
