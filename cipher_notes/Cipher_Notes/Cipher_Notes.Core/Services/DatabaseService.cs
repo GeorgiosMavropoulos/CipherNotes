@@ -7,6 +7,7 @@ using Cipher_Notes.Core.Services;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -103,8 +104,8 @@ namespace Cipher_Notes.Core.Services
             //try catch method to handle db errors
             try
             {
-                //return the asked note
-                return await _connection.Table<SecureNotes>().Where(x => x.Id == id).FirstOrDefaultAsync();
+                //return the requested note
+               return await _connection.Table<SecureNotes>().Where(x => x.Id == id).FirstOrDefaultAsync();
 
             }
             catch (Exception ex)
@@ -175,6 +176,9 @@ namespace Cipher_Notes.Core.Services
         //delete note function
         public async Task Delete(int id)
         {
+
+            //return an error message if id does not exists
+            
             //call the db initialization method if connection has not been initialized
             if (!initialized)
                 await InitAsync();
@@ -191,6 +195,10 @@ namespace Cipher_Notes.Core.Services
                     throw new NotFoundException("Note does not exist");
                 }
 
+            }
+            catch(NotFoundException)
+            {
+                throw; //throw the caught not found exception
             }
             catch (Exception ex)
             {
