@@ -47,9 +47,9 @@ namespace Cipher_Notes.Tests
                 File.Delete(testDbPath);//delete file
             }
         }
-        public void Dispose() { }//empty dispose is charged to delete temp paths and terminate connection
+        public void Dispose() { }//empty dispose is added in order IDisposable to be implemented in class
 
-        public Task InitializeAsync() => Task.CompletedTask;//re-open connection for a new test
+        public Task InitializeAsync() => Task.CompletedTask;//initialize AsyncLifeTime for each test
 
         //-------------Test Create----------------------------//
         [Fact]
@@ -92,6 +92,44 @@ namespace Cipher_Notes.Tests
             Assert.Equal(iv, result.IV);
         }
 
+
+        //test that Create method returns DatabaseException
+        [Fact]
+        public async Task Test_Create_Method_Returns_DatabaseException()
+        {
+            //Arrange
+            //declare variables
+            var exception_message = "Failed to save note in the Database";
+
+            //create the mocked db object
+            var mocked_db = new Mock<IDatabaseService>();
+
+            //create note
+            var note = new SecureNotes
+            {
+                Title = "title",
+                Encrypted_content = "text",
+                Salt = "salt",
+                IV = "iv",
+                Created_at = DateTime.Now
+                
+            };
+
+            //set up the DB to return DatabaseException when the mocked db object is being called
+            mocked_db.Setup(x=> x.Create(note)).ThrowsAsync(new DatabaseException(exception_message,new Exception("Sql query failed")));
+            //Act
+            //close connection so as Create will fail            
+            await dbService.CloseAsync();
+
+            //call the Create method and return the exception inside a variable
+            var ex = await Assert.ThrowsAsync<DatabaseException>(()=> mocked_db.Object.Create(note));
+
+            
+
+            //Assert
+            //verify exception messagei s equals to the expected one
+            Assert.Equal(exception_message, ex.Message);
+        }
 
     }
 }
