@@ -154,7 +154,7 @@ namespace Cipher_Notes.Core.Services
                 int rows = await _connection.UpdateAsync(securenote);//update the new object's details into the Db
 
                 if (rows == 0) //return an error message if note does not exist or not updated
-                    throw new  NotFoundException("Note not found or not updated");
+                    throw new  NotFoundException("Something went wrong.Note not found or not updated");
 
             }
             catch(ValidationException)

@@ -207,5 +207,33 @@ namespace Cipher_Notes.Tests
             Assert.Equal(exception_message, ex.Message);
 
         }
+
+        //test Update returns NotFoundException if db query return 0 rows had changes.
+        [Fact]
+        public async Task Test_Update_Returns_NotFoundException_If_DB_Query_Return_0_Rows_Changed()
+        {
+            //Arrange
+            //declare variables
+            var expected_exception = "Something went wrong.Note not found or not updated";
+
+            //Create SecureNotes object and assign id = 99999. This id does not exists
+            var note = new SecureNotes
+            {
+                Id = 99999,
+                Title = "Test",
+                Encrypted_content = "test",
+                Salt = "Test",
+                IV = "Test",
+                Updated_at = DateTime.Now,
+            };
+
+            //Act delegate Update method into a variable. Force Update method to return NotFoundException 
+            var ex = await Assert.ThrowsAsync<NotFoundException>(()=> dbService.Update(note));
+
+            //Assert
+            //verify returned excception message is equals to expected_exception
+            Assert.Equal(expected_exception, ex.Message);
+
+        }
     }
 }
