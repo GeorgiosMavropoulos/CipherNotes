@@ -5,9 +5,10 @@
 @using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
 @page "/create"
-@inject INoteService NoteService
+
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
+@inject CreateNoteViewModel create_note_view_model
 
 
 
@@ -54,6 +55,11 @@
         try
         {
 
+            //sync UI fields with ViewModel
+            create_note_view_model.Title = title;
+            create_note_view_model.Content = content;
+            create_note_view_model.Password = password;
+
             //validate that password and confirm password have been inserted
             await EmptyPasswordOrConfirmPassword();
 
@@ -61,7 +67,7 @@
             if (await PasswordsMatch())
             {
                 //create note
-                await NoteService.CreateNote(title, content, password);
+                await create_note_view_model.CreateNoteCommand.ExecuteAsync(null);
 
                 //alert user that note has been created
                 await DialogService.ShowAlert("Success", "Note created!", "BACK");
