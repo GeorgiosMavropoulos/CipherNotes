@@ -24,7 +24,8 @@
 
             <input type="password"
                    placeholder="Enter password"
-                   @bind="password" />
+                   @bind="password"
+                   />
 
             <button @onclick="Decrypt">Decrypt</button> <!---decrypt and unloc content btn -->
             <button @onclick="GoBack">Back</button>
@@ -35,7 +36,7 @@
         //display a form with note's info but allow user to edit content
         <div class="update-form">
             <input @bind="note.Title" class="title-input" />
-            <textarea @bind="decryptedContent"></textarea>
+            <textarea @bind="update_note_view_model.DecryptedContent"></textarea>
             <button @onclick="Update">Save</button>
             <button @onclick="GoBack">Back</button>
         </div>
@@ -55,7 +56,8 @@
     private string password = string.Empty;
     private string updatedTitle = string.Empty;
 
-    private string decryptedContent = string.Empty;
+    private string decrypted_content = string.Empty;
+
     private bool isUnlocked = false;
 
 
@@ -66,6 +68,11 @@
         try
         {
             note = await update_note_view_model.LoadNote(Id); //get the specific note from db by its id
+
+            
+            
+            update_note_view_model.Id = Id;// assign Id into UI's id property
+            
 
         }catch(NotFoundException ex) //return an error message if note does not exist
         {
@@ -80,13 +87,18 @@
     //method to decrypt content
     private async Task Decrypt()
     {
+       
         //try-catch method
         try
         {
 
             //decrypt content
             //assign method into decryptedContent variable
-            decryptedContent = await NoteService.DecryptNote(Id, password);
+
+            update_note_view_model.Password = password;//synch ui's pass with vm's
+            await update_note_view_model.DecryptCommand.ExecuteAsync(null);
+
+            decrypted_content = update_note_view_model.DecryptedContent;
 
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
@@ -123,7 +135,7 @@
         try
         {
             //validate that inputs won't be null using ValidateInputs method from 
-            if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(decryptedContent))
+            if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
             {
                 await DialogService.ShowAlert("Validation error", "Please complete all inputs", "OK");
                 return;
