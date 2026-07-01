@@ -16,6 +16,9 @@ namespace Cipher_Notes.ViewModels
         private readonly INoteService note_service;
 
         [ObservableProperty]
+        private int id;
+
+        [ObservableProperty]
         private string title;
 
         [ObservableProperty]
@@ -24,6 +27,8 @@ namespace Cipher_Notes.ViewModels
         [ObservableProperty]
         private string password;
 
+        [ObservableProperty]
+        private string decryptedContent = string.Empty; //declare this variable in order to store  the decrypted content decryption method returns
 
         //declare a constructor
         public UpdateNoteViewModel(INoteService note_service)
@@ -36,10 +41,17 @@ namespace Cipher_Notes.ViewModels
         [RelayCommand]
         public async Task<SecureNotes?> LoadNote(int id)
         {
-            
 
             //retrieve note
-          return  await note_service.GetNoteById(id); 
+            return await note_service.GetNoteById(id);
+        }
+
+        //method to decrypt note
+        [RelayCommand]
+        public async Task Decrypt()
+        {
+            //decrypt through NoteService's decryption method
+            DecryptedContent = await note_service.DecryptNote(Id, Password);    
         }
         //method to create the update command
         [RelayCommand]
