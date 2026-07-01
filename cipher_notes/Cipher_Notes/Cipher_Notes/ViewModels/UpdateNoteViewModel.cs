@@ -31,6 +31,16 @@ namespace Cipher_Notes.ViewModels
             this.note_service = note_service;
         }
 
+
+        //method to load note
+        [RelayCommand]
+        public async Task<SecureNotes?> LoadNote(int id)
+        {
+            
+
+            //retrieve note
+          return  await note_service.GetNoteById(id); 
+        }
         //method to create the update command
         [RelayCommand]
         public async Task Update(int id)

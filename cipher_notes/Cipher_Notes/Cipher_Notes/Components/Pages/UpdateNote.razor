@@ -9,7 +9,7 @@
 @inject INoteService NoteService
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
-
+@inject UpdateNoteViewModel update_note_view_model
 <div class="update_note-page">
     <h3>@note?.Title</h3>
 
@@ -65,7 +65,7 @@
         //try-catch method to catch exceptions and return error message
         try
         {
-            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+            note = await update_note_view_model.LoadNote(Id); //get the specific note from db by its id
 
         }catch(NotFoundException ex) //return an error message if note does not exist
         {
@@ -136,7 +136,7 @@
                 return;
             }
          
-                await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
+                await update_note_view_model.Update(Id);//call the update note method from note service to update data
                 //return an success message
             await DialogService.ShowAlert("Success", "Note has been updated", "OK");
 
