@@ -3,9 +3,11 @@
 @using Cipher_Notes.Core.Exceptions
 @using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
+@using Cipher_Notes.ViewModels
 
 @page "/note/{Id:int}"
 @inject INoteService NoteService
+@inject ViewNoteViewModel view_note_view_model
 @inject IDialogService dialogService
 @inject NavigationManager Navigation
 
@@ -55,7 +57,10 @@ else
         //try catch method to return exceptions
         try
         {
-            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+            note = await view_note_view_model.LoadNote(Id); //get the specific note from db by its id
+
+            //synchronise model's id with ui property
+            view_note_view_model.Id = Id;
 
         }catch(NotFoundException ex)
         {
