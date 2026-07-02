@@ -25,7 +25,7 @@ namespace Cipher_Notes.ViewModels
         private string password;
 
         [ObservableProperty]
-        private string decrypted_content;
+        private string decryptedContent;
 
         [ObservableProperty]
         private SecureNotes? note;
@@ -45,6 +45,15 @@ namespace Cipher_Notes.ViewModels
 
             //retrieve note
             return await note_service.GetNoteById(id);
+        }
+
+
+        //method to decrypt note
+        [RelayCommand]
+        public async Task DecrypteNote()
+        {
+            //decrypt through NoteService's decryption method
+            DecryptedContent = await note_service.DecryptNote(Id, Password);
         }
 
     }
