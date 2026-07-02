@@ -30,6 +30,10 @@ namespace Cipher_Notes.ViewModels
         [ObservableProperty]
         private string decryptedContent = string.Empty; //declare this variable in order to store  the decrypted content decryption method returns
 
+
+        [ObservableProperty]
+        private SecureNotes? note;
+
         //declare a constructor
         public UpdateNoteViewModel(INoteService note_service)
         {
@@ -61,7 +65,7 @@ namespace Cipher_Notes.ViewModels
             try
             {
                 //use the update method from Note Service
-                await note_service.UpdateNote(id,Title, Content, Password);
+                await note_service.UpdateNote(id, Title, DecryptedContent, Password);
             }
             catch (Exception ex)
             {
