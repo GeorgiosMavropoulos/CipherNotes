@@ -69,10 +69,10 @@
         {
             note = await update_note_view_model.LoadNote(Id); //get the specific note from db by its id
 
-            
-            
+
+
             update_note_view_model.Id = Id;// assign Id into UI's id property
-            
+
 
         }catch(NotFoundException ex) //return an error message if note does not exist
         {
@@ -87,18 +87,16 @@
     //method to decrypt content
     private async Task Decrypt()
     {
-       
+
         //try-catch method
         try
-        {
-
-            //decrypt content
+        {            //decrypt content
             //assign method into decryptedContent variable
 
             update_note_view_model.Password = password;//synch ui's pass with vm's
             await update_note_view_model.DecryptCommand.ExecuteAsync(null);
 
-            decrypted_content = update_note_view_model.DecryptedContent;
+            decrypted_content = update_note_view_model.DecryptedContent; //return the decrypted content in decrypted_conte variable
 
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
@@ -134,10 +132,20 @@
     {
         try
         {
+
+            //sync UI fields with ViewModel's properties
+            update_note_view_model.Title = note.Title;
+
+         
             //validate that inputs won't be null using ValidateInputs method from 
-            if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
+            if (string.IsNullOrWhiteSpace(update_note_view_model.Title))
             {
-                await DialogService.ShowAlert("Validation error", "Please complete all inputs", "OK");
+                await DialogService.ShowAlert("Validation error", "Title is empty", "OK");
+                return;
+            }
+            else if (string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
+            {
+                await DialogService.ShowAlert("Validation error", "Content is empty", "OK");
                 return;
             }
             //if user confirms the update, update the note
@@ -163,7 +171,7 @@
         }
         catch(Exception ex)
         {
-            await DialogService.ShowAlert("Error", "Cannot update note", "OK");
+            await DialogService.ShowAlert("Error", ex.Message, "OK");
             return;
         }
     }
