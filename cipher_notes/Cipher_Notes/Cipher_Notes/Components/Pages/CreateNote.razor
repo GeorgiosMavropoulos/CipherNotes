@@ -61,27 +61,23 @@
             create_note_view_model.Password = password;
 
             //validate that password and confirm password have been inserted
-            await EmptyPasswordOrConfirmPassword();
-
-            //validate that password match
-            if (await PasswordsMatch())
+            if (await EmptyInputsValidation())
             {
-                //create note
-                await create_note_view_model.CreateNoteCommand.ExecuteAsync(null);
+                //validate that password match
+                if (await PasswordsMatch())
+                {
+                    //create note
+                    await create_note_view_model.CreateNoteCommand.ExecuteAsync(null);
 
-                //alert user that note has been created
-                await DialogService.ShowAlert("Success", "Note created!", "BACK");
-                Navigation.NavigateTo("/");
-            }
-            else
-            {
-                await DialogService.ShowAlert("Error", "Passwords do not match", "OK");
-            }
-
+                    //alert user that note has been created
+                    await DialogService.ShowAlert("Success", "Note created!", "BACK");
+                    Navigation.NavigateTo("/");
+                }
+            }       
 
 
         }
-        catch (ValidationException ex) //return an error message if password is null
+        catch (ValidationException ex) //return an error message if password is null or passwords do not match
         {
             await DialogService.ShowAlert("Error", ex.Message, "OK"); //return an exception if password, content or title is null
             return;
@@ -96,23 +92,36 @@
     }
 
 
-    //method to validate that password or confirm password is not empty
-    private async Task EmptyPasswordOrConfirmPassword()
+    //method to return exceptions if inputs are empty
+    private async Task<bool> EmptyInputsValidation()
     {
-        //if confirm password is null return an error message
-        if (string.IsNullOrEmpty(password))
+        //if title is empty return a ValidationException
+        if(string.IsNullOrEmpty(title))
         {
-           
+            throw new ValidationException("Title is missing");
+
+        }
+        else if(string.IsNullOrEmpty(content))
+        {
+            throw new ValidationException("Content is missing");
+        }
+        //if  password is null return an error message
+       else if (string.IsNullOrEmpty(password))
+        {
+
             throw new ValidationException("Password is missing");
 
         }
+        //if  confirmation password is null return an error message
         else if (string.IsNullOrEmpty(confirmPassword))
         {
             throw new ValidationException("Please confirm password");
-            
-           
+
+
         }
-        
+
+        return true;
+
     }
 
 
@@ -123,7 +132,7 @@
         if (password != confirmPassword) //return an error if passwords do not match
         {
             
-            return false;
+            throw new ValidationException("Passwords do not match");
         }
         return true;
     }
