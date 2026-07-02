@@ -50,7 +50,7 @@ namespace Cipher_Notes.ViewModels
 
         //method to decrypt note
         [RelayCommand]
-        public async Task DecrypteNote()
+        public async Task Decrypt()
         {
             //decrypt through NoteService's decryption method
             DecryptedContent = await note_service.DecryptNote(Id, Password);
