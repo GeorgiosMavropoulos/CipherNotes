@@ -26,6 +26,9 @@ namespace Cipher_Notes.ViewModels
 
         [ObservableProperty]
         private string decrypted_content;
+
+        [ObservableProperty]
+        private SecureNotes? note;
         public ObservableCollection<SecureNotes> Notes { get; } = new ObservableCollection<SecureNotes>();
 
         //declare constructor

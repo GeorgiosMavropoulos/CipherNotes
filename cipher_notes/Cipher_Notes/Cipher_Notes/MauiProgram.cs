@@ -33,7 +33,7 @@ namespace Cipher_Notes
             builder.Services.AddTransient<DecryptNoteViewModel>();
             builder.Services.AddTransient<NoteListViewModel>();
             builder.Services.AddTransient<UpdateNoteViewModel>();
-
+            builder.Services.AddTransient<ViewNoteViewModel>();
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
