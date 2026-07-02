@@ -127,44 +127,54 @@
         }
     }
 
+    //method to return error messages if title or content are empty
+    private async Task<bool> ValidateTitleAndDecryptedContentAreNotEmpty()
+    {
+        //sync UI fields with ViewModel's properties
+        update_note_view_model.Title = note.Title;
+
+
+        //validate that inputs won't be null using ValidateInputs method from 
+        if (string.IsNullOrWhiteSpace(update_note_view_model.Title))
+        {
+
+            throw new ValidationException("Title is empty");
+        }
+        else if (string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
+        {
+            throw new ValidationException("Content is empty");
+            
+        }
+        return true;
+    }
+
     //update note method
     private async Task Update()
     {
         try
         {
-
-            //sync UI fields with ViewModel's properties
-            update_note_view_model.Title = note.Title;
-
-         
-            //validate that inputs won't be null using ValidateInputs method from 
-            if (string.IsNullOrWhiteSpace(update_note_view_model.Title))
+            //validate if title or content are empty
+            if (await ValidateTitleAndDecryptedContentAreNotEmpty())
             {
-                await DialogService.ShowAlert("Validation error", "Title is empty", "OK");
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
-            {
-                await DialogService.ShowAlert("Validation error", "Content is empty", "OK");
-                return;
-            }
-            //if user confirms the update, update the note
-            if ( !await ConfirmUpdate())
-            {
+                //if user confirms the update, update the note
+                if (!await ConfirmUpdate())
+                {
 
-                await DialogService.ShowAlert("Cancel", "You didn't update note", "OK");
-                return;
-            }
-         
+                    await DialogService.ShowAlert("Cancel", "You didn't update note", "OK");
+                    return;
+                }
+
                 await update_note_view_model.Update(Id);//call the update note method from note service to update data
                 //return an success message
-            await DialogService.ShowAlert("Success", "Note has been updated", "OK");
+                await DialogService.ShowAlert("Success", "Note has been updated", "OK");
 
-               
-
-
+            }   
         }
-       
+        catch(ValidationException ex) //return error messages if content or title are missing
+        {
+            await DialogService.ShowAlert("Validation error", ex.Message, "OK");
+        }
+
         catch (NotFoundException ex) //return an error message if selection query failed or note does not exists
         {
             await DialogService.ShowAlert("Not Found", ex.Message, "OK");
