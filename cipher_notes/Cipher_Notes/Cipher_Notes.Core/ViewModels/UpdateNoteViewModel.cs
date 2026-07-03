@@ -61,17 +61,12 @@ namespace Cipher_Notes.Core.ViewModels
         [RelayCommand]
         public async Task Update(int id)
         {
-            //try-catch to handle unexpected errors
-            try
-            {
+           
                 //use the update method from Note Service
                 await note_service.UpdateNote(id, Title, DecryptedContent, Password);
             }
-            catch (Exception ex)
-            {
-                throw; //return the catched error message
-            }
+          
 
-        }
+       
     }
 }

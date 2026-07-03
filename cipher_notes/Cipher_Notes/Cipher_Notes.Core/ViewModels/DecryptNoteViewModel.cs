@@ -34,21 +34,9 @@ namespace Cipher_Notes.Core.ViewModels
         [RelayCommand]
         public async Task DecryptNote(int id)
         {
-            //try catch method to return error message in UI
-            try
-            {
-                //if all goes well use the decrypt method from NoteService
+              //if all goes well use the decrypt method from NoteService
                 Decrypted_content = await note_service.DecryptNote(id, Password);   
-
-                
-              
-
-            }
-            catch (Exception ex)
-            {
-                throw; //return an error message if sth goes wrong
-              
-            }
+         
 
         }
     }
