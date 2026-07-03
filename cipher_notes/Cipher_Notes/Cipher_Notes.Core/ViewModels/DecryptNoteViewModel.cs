@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace Cipher_Notes.ViewModels
+namespace Cipher_Notes.Core.ViewModels
 {
     //since I use the CommunityToolkit I do not have to manually add iCommands and the toolkit creates them by itself
     public partial class DecryptNoteViewModel : ObservableObject
