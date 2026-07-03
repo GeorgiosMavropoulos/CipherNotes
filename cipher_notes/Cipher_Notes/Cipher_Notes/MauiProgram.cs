@@ -2,7 +2,7 @@
 using Cipher_Notes.Core.Models;
 using Cipher_Notes.Core.Services;
 using Cipher_Notes.Services;
-using Cipher_Notes.ViewModels;
+using Cipher_Notes.Core.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace Cipher_Notes
