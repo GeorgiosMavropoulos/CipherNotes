@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace Cipher_Notes.ViewModels
+namespace Cipher_Notes.Core.ViewModels
 {
     //ViewNote's view model for ViewNote page
     public partial class ViewNoteViewModel : ObservableObject
