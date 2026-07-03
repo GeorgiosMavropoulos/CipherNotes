@@ -45,9 +45,7 @@ namespace Cipher_Notes.Core.ViewModels
         [RelayCommand]
         public async Task LoadNotes()
         {
-            //try-catch function to return error message if sth went wrong
-            try
-            {
+           
                 //using GetAllNotes function from NoteService to retrieve all notes
                 var notes = await note_service.GetAllNotes();
 
@@ -59,11 +57,8 @@ namespace Cipher_Notes.Core.ViewModels
                     Notes.Add(note);    //add note to the list
                 }
 
-            }
-            catch (Exception ex) 
-            {
-                await Shell.Current.DisplayAlertAsync("Error", ex.Message, "OK");
-            }
+            
+         
             
         }
 
