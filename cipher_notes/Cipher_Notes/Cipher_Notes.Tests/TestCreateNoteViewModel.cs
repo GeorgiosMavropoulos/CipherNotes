@@ -7,6 +7,7 @@ using Cipher_Notes.Core.Services;
 using Moq;
 using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
+using Xunit.Sdk;
 
 namespace Cipher_Notes.Tests
 {
@@ -50,6 +51,27 @@ namespace Cipher_Notes.Tests
             //Assert
             //verify the method will return the values assigned above
             mocked_note_service.Verify(x => x.CreateNote("Title", "content", "password"),Times.Once); //verify method has been called once
+        }
+
+
+        //Test create note successfully returns exception
+        [Fact]
+        public async Task Test_CreateNote_Returns_General_Exception()
+        {
+            //Arrange
+
+            //declare a variable to store the expected message
+            var expected_message = "Error, cannot create the note";
+
+            //set up the CreateNote method via mocked_service object to return the exception
+            mocked_note_service.Setup(x => x.CreateNote
+            (It.IsAny<string>(),It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new Exception("Error, cannot create the note"));
+
+
+            //Act
+            //call CreateNote via CreateNote command using the view model's object. Delegate this method into a variable to store the exception
+            var ex = await Assert.ThrowsAsync<Exception>(
+                () => create_note_view_model.CreateNoteCommand.ExecuteAsync(null));
         }
     }
 }
