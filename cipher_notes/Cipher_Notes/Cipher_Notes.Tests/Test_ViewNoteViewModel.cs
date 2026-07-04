@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Cipher_Notes.Core.Models;
-using Cipher_Notes.Core.ViewModels;
-using Cipher_Notes.Core.Services;
-using Moq;
-using Cipher_Notes.Core.Exceptions;
+﻿using Cipher_Notes.Core.Exceptions;
 using Cipher_Notes.Core.Interfaces;
+using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
+using Cipher_Notes.Core.ViewModels;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Text;
 using Xunit.Sdk;
 
 namespace Cipher_Notes.Tests
@@ -68,6 +69,40 @@ namespace Cipher_Notes.Tests
             //Assert that _viewModel.Title is equals to the declared title  from this method
             Assert.Equal(title, _viewModel.Note.Title);
 
+
+        }
+
+
+        //test LoadNote successfully returns general exception
+        [Fact]
+        public async Task Test_LoadNote_Successfully_Returns_General_Exception()
+        {
+            //Arrange
+            //declare variables
+            var expected_exception_message = "Failed to get note";
+
+            //create a SecureNotes object
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Title = "title",
+                Encrypted_content = "title",
+                Salt = "salt",
+                IV = "iv"
+            };
+
+            //set up mocked_note_service to return the exception when the method GetNoteById is being called.
+            //LoadNote uses this method from NoteService to retrieve notes
+            _note_service_mocked.Setup(x => x.GetNoteById(1)).Throws(new Exception("Failed to get note"));
+
+            //Act
+            //call the LoadNoteCommand from ViewModel. Assert command returns the Exception.
+            //Delegate this method into a variable in order to store the exception message.
+            var exception = await Assert.ThrowsAsync<Exception>(() => _viewModel.LoadNoteCommand.ExecuteAsync(1));
+
+            //Assert
+            //verify the returned exception from LoadNoteCommand is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, exception.Message);
 
         }
 
