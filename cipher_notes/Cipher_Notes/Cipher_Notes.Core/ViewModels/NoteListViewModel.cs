@@ -66,10 +66,7 @@ namespace Cipher_Notes.Core.ViewModels
         [RelayCommand]
         public async Task DeleteNote(int id)
         {
-            //try-catch function to return error message if sth went wrong
-            try
-            {
-                //retrieve note by its id
+               //retrieve note by its id
                 var note = await note_service.GetNoteById(id);
 
                                 
@@ -85,15 +82,9 @@ namespace Cipher_Notes.Core.ViewModels
                     Notes.Remove(note_to_remove); //update UI also
                 }
                
-            }
-            catch (Exception ex) 
-            {
-                throw;
-            }
+           
 
-            
-
-            
+                       
 
         }
 

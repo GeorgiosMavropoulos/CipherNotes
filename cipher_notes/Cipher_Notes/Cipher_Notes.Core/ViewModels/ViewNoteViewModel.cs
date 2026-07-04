@@ -44,7 +44,8 @@ namespace Cipher_Notes.Core.ViewModels
         {
 
             //retrieve note
-            return await note_service.GetNoteById(id);
+            Note =  await note_service.GetNoteById(id); // save the returned data into note property
+            return Note; //return note
         }
 
 

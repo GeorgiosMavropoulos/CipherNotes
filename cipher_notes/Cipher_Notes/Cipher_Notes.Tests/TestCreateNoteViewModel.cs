@@ -25,7 +25,7 @@ namespace Cipher_Notes.Tests
             //set up a new note service mocked object to be created each time the test runs
             mocked_note_service = new Mock<INoteService>();
 
-            //set up a new view model's object to be created each time the test runs
+            //set up a new view model's object to be created each time the test runs and pass a parameter note's services object
             create_note_view_model = new CreateNoteViewModel(mocked_note_service.Object);
         }
 
