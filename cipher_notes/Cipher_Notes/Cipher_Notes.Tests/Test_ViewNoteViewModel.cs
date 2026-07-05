@@ -106,6 +106,32 @@ namespace Cipher_Notes.Tests
 
         }
 
+        /////////////////////////--------------Test Decrypt-------------------------------/////////////////
+        [Fact]
+        public async Task Test_Decrypt_Success_Decrypts_Note()
+        {
+            //Arrange
 
+            //declare variables
+            var content = "title";
+            var decrypted_content = "decrypted_text";
+            var password = "password";
+
+            //assign the declared values into view model's properties
+            _viewModel.Id = 1;
+            _viewModel.Password = password;
+
+         //set up GetNoteById from NoteService to return the created note when it's being called. Use mocked_encryption_service for this purpose.
+         _note_service_mocked.Setup(x=> x.DecryptNote(1, password)).Returns((Task.FromResult(decrypted_content)));
+
+            //Act
+            //using DecryptCommand from ViewModel decrypted the created note
+            await _viewModel.DecryptCommand.ExecuteAsync(null);
+
+            //Assert
+            //Verify decrypted content is equals to the value of declared content
+            Assert.Equal(_viewModel.DecryptedContent, decrypted_content);
+
+        }
     }
 }
