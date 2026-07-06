@@ -133,5 +133,28 @@ namespace Cipher_Notes.Tests
             Assert.Equal(_viewModel.DecryptedContent, decrypted_content);
 
         }
+
+        //test Decrypt returns general exception with success
+        [Fact]
+        public async Task Test_Decrypt_Returns_General_Exception_With_Success()
+        {
+            //Arrange
+            //declare variables
+            var expected_exception_message = "Unexpected error during decryption";
+
+            _viewModel.Id = 1; //define id
+            _viewModel.Password = "password"; //define password
+
+            //set up DecryptNote from NoteService to return the general exception
+            _note_service_mocked.Setup(x => x.DecryptNote(1, "password")).Throws(new Exception("Unexpected error during decryption"));
+
+            //Acct
+            //use DecryptCommand and assert it'll will return the exception
+            var exception = await Assert.ThrowsAsync<Exception>(() => _viewModel.DecryptCommand.ExecuteAsync(null));
+
+            //Assert
+            //Verify exception's message is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
     }
 }
