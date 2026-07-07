@@ -33,6 +33,7 @@ namespace Cipher_Notes.Tests
             _viewModel = new ViewNoteViewModel(_note_service_mocked.Object);
         }
 
+        /////////////////////////--------------Test LoadNote-------------------------------/////////////////
 
         //test LoadNote successfully returns the requested note
         [Fact]
