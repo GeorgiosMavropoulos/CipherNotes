@@ -30,6 +30,9 @@ namespace Cipher_Notes.Core.ViewModels
         [ObservableProperty] //search query bound for UI search bar searching
         private string searchQuery = string.Empty;
 
+        [ObservableProperty] //create an id property to make DeleteNote unit test work
+        private int id;
+
 
         //when search query changes, this method informs automatically the query
         partial void OnSearchQueryChanged(string value)

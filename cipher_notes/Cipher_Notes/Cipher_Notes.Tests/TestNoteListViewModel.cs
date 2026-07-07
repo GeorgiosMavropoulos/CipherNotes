@@ -133,5 +133,33 @@ namespace Cipher_Notes.Tests
 
            
         }
+
+
+        //test that DeleteNote returns a general exception. Other exception have been tested through NoteService and DB service tests.
+        [Fact]
+        public async Task Test_DeleteNote_Returns_Exception()
+        {
+            //Arrange
+            var expected_exception_message = "Error.Deletion failed";
+
+            note_list_view_model.Id = 1; // assign an id value to Id property of the view model
+
+            //set up GetNotById to return a new object
+            note_service_mocked.Setup(x => x.GetNoteById(1)).ReturnsAsync(new SecureNotes { Id = 1 });
+
+            //set up Delete from NoteService to return a general Exception
+            note_service_mocked.Setup(x => x.Delete(1)).Throws(new Exception("Error.Deletion failed"));
+
+
+            //Act
+            //delegate DeleteNoteCommand in a variable to store the returned exception. Additionally, assert it returns an exception
+            var exception = await Assert.ThrowsAsync<Exception>(() => note_list_view_model.DeleteNote(1));
+
+            //Assert
+
+            //verify exception's message is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
+
     }
 }
