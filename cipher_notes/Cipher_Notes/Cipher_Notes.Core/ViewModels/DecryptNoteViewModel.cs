@@ -23,6 +23,11 @@ namespace Cipher_Notes.Core.ViewModels
         [ObservableProperty]
         private string decrypted_content;
 
+        [ObservableProperty]
+        private int id;
+
+       
+
 
         //declare constructor
         public DecryptNoteViewModel(INoteService note_service)
