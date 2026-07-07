@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using Cipher_Notes.Core.Exceptions;
 
 namespace Cipher_Notes.Core.ViewModels
 {
@@ -66,7 +67,15 @@ namespace Cipher_Notes.Core.ViewModels
         [RelayCommand]
         public async Task DeleteNote(int id)
         {
-               //retrieve note by its id
+           
+            
+            //try-catch to handle null note exception
+            try
+            {
+
+           
+            
+             //retrieve note by its id
                 var note = await note_service.GetNoteById(id);
 
                                 
@@ -81,10 +90,13 @@ namespace Cipher_Notes.Core.ViewModels
                     //using Delete method from SecureNotes service
                     Notes.Remove(note_to_remove); //update UI also
                 }
-               
-           
 
-                       
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+
 
         }
 
