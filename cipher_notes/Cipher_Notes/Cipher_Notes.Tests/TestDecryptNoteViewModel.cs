@@ -70,5 +70,33 @@ namespace Cipher_Notes.Tests
 
         }
 
+        //test DecryptNote returns a general exception
+        [Fact]
+        public async Task Test_DecryptNote_Successfully_Returns_General_Exception()
+        {
+            //Arrange
+            //declare a variable with the expected exception msg
+            var expected_exception_message = "Unexpected error during decryption";
+
+            //delegate password value and id into ViewModel's properties
+            decrypt_viewModel.Password = "pass";
+            decrypt_viewModel.Id = 1;
+
+            _note_service_mocked.Setup(x => x.DecryptNote(1, "pass")).Throws(new Exception("Unexpected error during decryption"));
+
+            //Act
+
+            //call DecryptNoteCommand from the ViewModel. Delegate it into a variable called exception.Assert it returns a general exception
+            var exception = await Assert.ThrowsAsync<Exception>(() => decrypt_viewModel.DecryptNoteCommand.ExecuteAsync(1));
+
+            //Assert
+            //verify DecryptNote from NoteService has been called once
+            _note_service_mocked.Verify(x => x.DecryptNote(1, "pass"), Times.Once);
+
+            //verify expected_exception_message is equals to the returned one. The returned one is being returned through the variable exception
+            Assert.Equal(expected_exception_message, exception.Message);
+
+        }
+
     }
 }
