@@ -100,5 +100,38 @@ namespace Cipher_Notes.Tests
             //verify exception message is equal to expected_exception_message
             Assert.Equal(expected_exception_message, exception.Message);
         }
+
+
+
+        ///////////////////////////////////////////////////////Test DeleteNote//////////////////////////////////////////////////////////
+
+        //test DeleteNote deletes note with success (Happy Path)
+        [Fact]
+        public async Task Test_DeleteNote_Deletes_Note_With_Success()
+        {
+            //Arrange
+
+            //create a new note
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Title = "Title",
+                Salt = "salt",
+                IV = "Iv"
+            };
+
+            //set up GetNoteById to return the created note
+            note_service_mocked.Setup(x=> x.GetNoteById(1)).ReturnsAsync(note);
+
+            //Act
+            //call DeleteNoteCommand
+            await note_list_view_model.DeleteNoteCommand.ExecuteAsync(1);
+
+            //Assert
+            //verify Delete method from NoteService has been called at least once
+            note_service_mocked.Verify(x => x.Delete(1), Times.Once);
+
+           
+        }
     }
 }
