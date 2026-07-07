@@ -161,5 +161,37 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expected_exception_message, exception.Message);
         }
 
+        //test DeleteNote successfully removes the deleted note from the list in order for the UI to get updated
+        [Fact]
+        public async Task Test_DeleteNote_Removes_Deleted_Notes_From_The_List()
+        {
+            //Arrange
+
+            //create a new note
+            var note = new SecureNotes { Id = 1, Title = "title", Salt = "salt", IV = "iv" };
+
+            //add note into ViewModel's collection        
+          
+                note_list_view_model.Notes.Add(note);
+
+            //set up GetNoteById to return the created note
+            note_service_mocked.Setup(x => x.GetNoteById(1)).ReturnsAsync(note);
+
+            //set up Delete from note_service_mocked to return completed task
+            note_service_mocked.Setup(x => x.Delete(1)).Returns(Task.CompletedTask);
+
+            //Act
+            //execute DeleteNoteCommand
+            await note_list_view_model.DeleteNoteCommand.ExecuteAsync(1);
+
+            //Assert
+
+            //verify that note collection does not contain the note with id= 1
+            Assert.DoesNotContain(note_list_view_model.Notes, x => x.Id == 1);
+
+            //verify that Note list's count has been decreased by 1
+            Assert.Equal(0, note_list_view_model.Notes.Count);
+        }
+
     }
 }
