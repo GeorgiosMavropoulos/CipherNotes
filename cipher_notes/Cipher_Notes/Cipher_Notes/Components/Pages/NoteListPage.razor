@@ -70,13 +70,14 @@
 </div>
 
 @code {
-   
-    
 
-    
+
+
+
 
     protected override async Task OnInitializedAsync()
     {
+
         await note_list_view_model.LoadNotesCommand.ExecuteAsync(null);
     }
 
@@ -121,7 +122,7 @@
             //call delete note method
             await note_list_view_model.DeleteNoteCommand.ExecuteAsync(id);
 
-            
+
 
             await DialogService.ShowAlert("alert", "Note deleted!", "BACK");    //return confirmation message
         }
@@ -145,13 +146,16 @@
 
             var match = note_list_view_model.FindNoteByTitle(note_list_view_model.SearchQuery);
 
-            if (match == null) //return an error message if note does not exist
-            {
-                await DialogService.ShowAlert("Error", "Note does not exist", "BACK");
-                return;
-            }
+
 
             Navigation.NavigateTo($"/note/{match.Id}"); //navigate to note's page
+        }
+        catch(NotFoundException ex)
+        {
+            
+            await DialogService.ShowAlert("Error", ex.Message, "BACK");
+
+            note_list_view_model.SearchQuery = string.Empty; //clear input
         }
         catch (Exception ex) //return exception if an error occurs
         {
