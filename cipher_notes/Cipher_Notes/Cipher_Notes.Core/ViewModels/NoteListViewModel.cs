@@ -106,9 +106,18 @@ namespace Cipher_Notes.Core.ViewModels
         //search query implementation. Searching if query matches and navigating directly
         public SecureNotes? FindNoteByTitle(string query)
         {
-            return Notes.FirstOrDefault(n =>
+
+            var note = Notes.FirstOrDefault(n =>
                 !string.IsNullOrWhiteSpace(n.Title) &&
                 n.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+            //throw a NotFoundException if note is null
+            if(note == null)
+            {
+                throw new NotFoundException("Note does not exist");
+            }
+
+            return note;
         }
     }
 }
