@@ -64,7 +64,7 @@ namespace Cipher_Notes.Tests
             await note_list_view_model.LoadNotesCommand.ExecuteAsync(null);
 
             //Assert
-            
+
             //verify GetAllNotes has been called once
             note_service_mocked.Verify(x => x.GetAllNotes(), Times.Once());
 
@@ -77,7 +77,7 @@ namespace Cipher_Notes.Tests
             //verify that note2's title is equals to the returned note's title
             Assert.Equal(note2.Title, note_list[1].Title);
 
-            
+
         }
 
         //test LoadNotes successfully returns Exception if sth goes wrong
@@ -121,7 +121,7 @@ namespace Cipher_Notes.Tests
             };
 
             //set up GetNoteById to return the created note
-            note_service_mocked.Setup(x=> x.GetNoteById(1)).ReturnsAsync(note);
+            note_service_mocked.Setup(x => x.GetNoteById(1)).ReturnsAsync(note);
 
             //Act
             //call DeleteNoteCommand
@@ -131,7 +131,7 @@ namespace Cipher_Notes.Tests
             //verify Delete method from NoteService has been called at least once
             note_service_mocked.Verify(x => x.Delete(1), Times.Once);
 
-           
+
         }
 
 
@@ -171,8 +171,8 @@ namespace Cipher_Notes.Tests
             var note = new SecureNotes { Id = 1, Title = "title", Salt = "salt", IV = "iv" };
 
             //add note into ViewModel's collection        
-          
-                note_list_view_model.Notes.Add(note);
+
+            note_list_view_model.Notes.Add(note);
 
             //set up GetNoteById to return the created note
             note_service_mocked.Setup(x => x.GetNoteById(1)).ReturnsAsync(note);
@@ -193,5 +193,44 @@ namespace Cipher_Notes.Tests
             Assert.Equal(0, note_list_view_model.Notes.Count);
         }
 
+
+        //--------------------------------------------------Test FindNoteByTitle------------------------------///////////
+
+        //test FindNoteByTitle successfully returns the requested note
+        [Fact]
+        public async Task Test_FindNoteByTitle_Successfully_Returns_Title()
+        {
+            
+            //Arrange
+            //Declare variables
+            var title = "Title";
+
+            //create a new note
+            var note = new SecureNotes
+            {
+                Id = 1,
+                Title = title,
+                Encrypted_content = "test",
+                Salt = "test",
+                IV = "test"
+            };
+
+            //add the new note in the collection
+            note_list_view_model.Notes.Add(note);
+
+            //Act
+            //call FindNoteByTitle method
+            var result = note_list_view_model.FindNoteByTitle(title);
+
+            //Assert
+            //verify that result is not null
+            Assert.NotNull(result);
+
+            //verify that result.Title is equals to the declared title
+            Assert.Equal(title, result.Title);  
+
+
+
+        }
     }
 }
