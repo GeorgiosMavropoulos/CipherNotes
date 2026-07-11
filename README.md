@@ -101,10 +101,6 @@ Before running the project, make sure you have:
 
 cipher_notes/
 ├── Cipher_Notes/                     # MAUI Blazor Hybrid app
-│   ├── ViewModels/
-│   │   ├── NoteListViewModel.cs
-│   │   ├── DecryptNoteViewModel.cs
-│   │   └── UpdateNoteViewModel.cs
 │   ├── Pages/ (Razor Components)
 │   │   ├── Home.razor               # Notes list / dashboard
 │   │   ├── CreateNote.razor         # Create a new encrypted note
@@ -118,8 +114,12 @@ cipher_notes/
 │
 ├── Cipher_Notes.Core/                # Plain class library (no MAUI dependency)
 │   ├── Models/
-│   │   └── SecureNotes.cs           # Note entity (Id, Title, Encrypted_content, Salt, IV, dates)
-│   ├── Services/
+│   │   └── SecureNotes.cs            # Note entity (Id, Title, Encrypted_content, Salt, IV, dates)
+│   │   ├── ViewModels/
+│   │   ├── NoteListViewModel.cs
+│   │   ├── DecryptNoteViewModel.cs
+│   │   └── UpdateNoteViewModel.cs
+    ├── Services/
 │   │   ├── DatabaseService.cs       # SQLite CRUD operations
 │   │   ├── EncryptionService.cs     # AES encryption/decryption + PBKDF2 key derivation
 │   │   └── NoteService.cs           # Business logic connecting UI to DB & encryption
@@ -129,8 +129,15 @@ cipher_notes/
 │       └── ValidationException.cs       # Thrown on invalid/empty input
 │
 └── Cipher_Notes.Tests/                # xUnit test project
+
+    └── TestEncryptionService.cs       # Unit tests for AES encryption/decryption logic
+    └── TestDatabaseService.cs         # Unit tests for crud database logic
+    └── TestNoteService.cs             # Unit tests for NoteService's methods
+
+
     └── TestEncryptionService.cs      # Unit tests for AES encryption/decryption logic
 ```
+
 
 🧪 Testing
 
