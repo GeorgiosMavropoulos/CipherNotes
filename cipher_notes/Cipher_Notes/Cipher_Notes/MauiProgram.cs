@@ -1,6 +1,8 @@
-﻿using Cipher_Notes.Services;
-using Cipher_Notes.ViewModels;
-
+﻿using Cipher_Notes.Core.Interfaces;
+using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
+using Cipher_Notes.Services;
+using Cipher_Notes.Core.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace Cipher_Notes
@@ -22,10 +24,16 @@ namespace Cipher_Notes
 
            
             builder.Services.AddTransient<MainPage>();
-            builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddTransient<EncryptionService>();
-            builder.Services.AddTransient<NoteService>();
-
+            builder.Services.AddSingleton<IDatabaseService>(sp =>
+    new DatabaseService(Path.Combine(FileSystem.AppDataDirectory, "cipher_notes.db")));//define path
+            builder.Services.AddTransient<IEncryptionService, EncryptionService>();
+            builder.Services.AddTransient<INoteService, NoteService>();
+            builder.Services.AddTransient<IDialogService, DialogService>();
+            builder.Services.AddTransient<CreateNoteViewModel>();
+            builder.Services.AddTransient<DecryptNoteViewModel>();
+            builder.Services.AddTransient<NoteListViewModel>();
+            builder.Services.AddTransient<UpdateNoteViewModel>();
+            builder.Services.AddTransient<ViewNoteViewModel>();
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG

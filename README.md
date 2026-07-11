@@ -21,7 +21,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 ---
 
 ## 🏗️ Architecture
-
+```
 ┌─────────────────────────────────────────┐
 │  Cipher_Notes  (MAUI Blazor Hybrid app)  │
 │  Razor Pages · ViewModels · DI setup     │
@@ -41,7 +41,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 │  Cipher_Notes.Tests  (xUnit)              │
 │  references Cipher_Notes.Core directly    │
 └─────────────────────────────────────────┘
-
+```
 ## 🛠️ Tech Stack
 
 - **.NET 10 / .NET MAUI** — cross-platform app framework
@@ -58,7 +58,7 @@ The app ensures full privacy by encrypting all data on-device using **AES encryp
 Before running the project, make sure you have:
 
 - **Visual Studio 2022** (17.8 or later) with the following workloads installed:
-  - **.NET Multi-platform App UI development** (MAUI)
+  - **.NET Blazor Hybrid** 
   - **Android SDK & Emulator** (installed automatically with the MAUI workload)
 - **.NET 10 SDK** (or the version targeted by the project)
 - An **Android Emulator** configured (Pixel device recommended, API 34+, 4GB+ RAM)
@@ -97,7 +97,7 @@ Before running the project, make sure you have:
 ---
 
 ## 📂 Project Structure
-
+```
 
 cipher_notes/
 ├── Cipher_Notes/                     # MAUI Blazor Hybrid app
@@ -129,9 +129,14 @@ cipher_notes/
 │       └── ValidationException.cs       # Thrown on invalid/empty input
 │
 └── Cipher_Notes.Tests/                # xUnit test project
+
     └── TestEncryptionService.cs       # Unit tests for AES encryption/decryption logic
     └── TestDatabaseService.cs         # Unit tests for crud database logic
     └── TestNoteService.cs             # Unit tests for NoteService's methods
+
+
+    └── TestEncryptionService.cs      # Unit tests for AES encryption/decryption logic
+```
 
 
 🧪 Testing

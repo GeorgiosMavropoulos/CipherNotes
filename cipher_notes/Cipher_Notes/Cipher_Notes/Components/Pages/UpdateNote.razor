@@ -1,13 +1,15 @@
-﻿@using Cipher_Notes.Models
+﻿@using Cipher_Notes.Core.Models
+@using Cipher_Notes.Core.Services
+@using Cipher_Notes.Core.ViewModels
+@using Cipher_Notes.Core.Exceptions
+@using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
-@using Cipher_Notes.ViewModels
-@using Cipher_Notes.Models
-@using Cipher_Notes.Exceptions
 @page "/update/{Id:int}"
 
-@inject NoteService NoteService
-@inject NavigationManager Navigation
 
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject UpdateNoteViewModel update_note_view_model
 <div class="update_note-page">
     <h3>@note?.Title</h3>
 
@@ -22,7 +24,8 @@
 
             <input type="password"
                    placeholder="Enter password"
-                   @bind="password" />
+                   @bind="password"
+                   />
 
             <button @onclick="Decrypt">Decrypt</button> <!---decrypt and unloc content btn -->
             <button @onclick="GoBack">Back</button>
@@ -33,7 +36,7 @@
         //display a form with note's info but allow user to edit content
         <div class="update-form">
             <input @bind="note.Title" class="title-input" />
-            <textarea @bind="decryptedContent"></textarea>
+            <textarea @bind="update_note_view_model.DecryptedContent"></textarea>
             <button @onclick="Update">Save</button>
             <button @onclick="GoBack">Back</button>
         </div>
@@ -53,7 +56,8 @@
     private string password = string.Empty;
     private string updatedTitle = string.Empty;
 
-    private string decryptedContent = string.Empty;
+    private string decrypted_content = string.Empty;
+
     private bool isUnlocked = false;
 
 
@@ -63,11 +67,16 @@
         //try-catch method to catch exceptions and return error message
         try
         {
-            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+            note = await update_note_view_model.LoadNote(Id); //get the specific note from db by its id
+
+
+
+            update_note_view_model.Id = Id;// assign Id into UI's id property
+
 
         }catch(NotFoundException ex) //return an error message if note does not exist
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
+            await DialogService.ShowAlert("Error", ex.Message, "OK");
             GoBack();//return method
         }
 
@@ -78,13 +87,16 @@
     //method to decrypt content
     private async Task Decrypt()
     {
+
         //try-catch method
         try
-        {
-
-            //decrypt content
+        {            //decrypt content
             //assign method into decryptedContent variable
-            decryptedContent = await NoteService.DecryptNote(Id, password);
+
+            update_note_view_model.Password = password;//synch ui's pass with vm's
+            await update_note_view_model.DecryptCommand.ExecuteAsync(null);
+
+            decrypted_content = update_note_view_model.DecryptedContent; //return the decrypted content in decrypted_conte variable
 
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
@@ -92,12 +104,12 @@
         }
         catch (ValidationException ex) //return an error message if password is null
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password is null
+            await DialogService.ShowAlert("Error", ex.Message, "OK"); //return an exception if password is null
             return;
         }
         catch (InvalidPasswordException ex) //return an error message in UI if password is wrong
         {
-            await App.Current.MainPage.DisplayAlertAsync(
+            await DialogService.ShowAlert(
                 "Authentication Error",
                 ex.Message,
                 "OK");
@@ -108,11 +120,32 @@
         }
         catch (Exception ex) //return a general exception message
         {
-            await App.Current.MainPage.DisplayAlertAsync(
+            await DialogService.ShowAlert(
                "Error",
                ex.Message,
                "OK");
         }
+    }
+
+    //method to return error messages if title or content are empty
+    private async Task<bool> ValidateTitleAndDecryptedContentAreNotEmpty()
+    {
+        //sync UI fields with ViewModel's properties
+        update_note_view_model.Title = note.Title;
+
+
+        //validate that inputs won't be null using ValidateInputs method from 
+        if (string.IsNullOrWhiteSpace(update_note_view_model.Title))
+        {
+
+            throw new ValidationException("Title is empty");
+        }
+        else if (string.IsNullOrWhiteSpace(update_note_view_model.DecryptedContent))
+        {
+            throw new ValidationException("Content is empty");
+            
+        }
+        return true;
     }
 
     //update note method
@@ -120,35 +153,35 @@
     {
         try
         {
-            //validate that inputs won't be null using ValidateInputs method from 
-            if (string.IsNullOrWhiteSpace(note.Title) || string.IsNullOrWhiteSpace(decryptedContent))
+            //validate if title or content are empty
+            if (await ValidateTitleAndDecryptedContentAreNotEmpty())
             {
-                await App.Current.MainPage.DisplayAlertAsync("Validation error", "Please complete all inputs", "OK");
-                return;
-            }
-            //if user confirms the update, update the note
-            if ( !await ConfirmUpdate())
-            {
+                //if user confirms the update, update the note
+                if (!await ConfirmUpdate())
+                {
 
-                await App.Current.MainPage.DisplayAlertAsync("Cancel", "You didn't update note", "OK");
-                return;
-            }
-         
-                await NoteService.UpdateNote(Id, note.Title, decryptedContent, password);//call the update note method from note service to update data
+                    await DialogService.ShowAlert("Cancel", "You didn't update note", "OK");
+                    return;
+                }
+
+                await update_note_view_model.Update(Id);//call the update note method from note service to update data
                 //return an success message
-                await App.Current.MainPage.DisplayAlertAsync("Success", "Note has been updated", "OK");
-               
+                await DialogService.ShowAlert("Success", "Note has been updated", "OK");
 
-
+            }   
         }
-       
+        catch(ValidationException ex) //return error messages if content or title are missing
+        {
+            await DialogService.ShowAlert("Validation error", ex.Message, "OK");
+        }
+
         catch (NotFoundException ex) //return an error message if selection query failed or note does not exists
         {
-            await App.Current.MainPage.DisplayAlertAsync("Not Found", ex.Message, "OK");
+            await DialogService.ShowAlert("Not Found", ex.Message, "OK");
         }
         catch(Exception ex)
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", "Cannot update note", "OK");
+            await DialogService.ShowAlert("Error", ex.Message, "OK");
             return;
         }
     }

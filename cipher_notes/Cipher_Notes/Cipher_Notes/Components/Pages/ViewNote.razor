@@ -1,9 +1,14 @@
-﻿@using Cipher_Notes.Models
+﻿@using Cipher_Notes.Core.Models
+@using Cipher_Notes.Core.Services
+@using Cipher_Notes.Core.Exceptions
+@using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
-@using Cipher_Notes.Exceptions
+@using Cipher_Notes.Core.ViewModels
 
 @page "/note/{Id:int}"
-@inject NoteService NoteService
+@inject INoteService NoteService
+@inject ViewNoteViewModel view_note_view_model
+@inject IDialogService dialogService
 @inject NavigationManager Navigation
 
 
@@ -30,7 +35,7 @@ else if (!isUnlocked)
 else
 {
     <div class="note-content">
-        <p>@decryptedContent</p>
+            <p>@decryptedContent</p>
         <button @onclick="GoBack">Back</button>
     </div>
 }
@@ -52,11 +57,17 @@ else
         //try catch method to return exceptions
         try
         {
-            note = await NoteService.GetNoteById(Id); //get the specific note from db by its id
+            note = await view_note_view_model.LoadNote(Id); //get the specific note from db by its id
+
+            //synchronise model's id with ui property
+            view_note_view_model.Id = Id;
+
+            //synch model's decrypted content with UI's decrypted content
+            view_note_view_model.DecryptedContent = decryptedContent;
 
         }catch(NotFoundException ex)
         {
-            await App.Current.MainPage.DisplayAlertAsync( //display an error message if note does not exist
+            await dialogService.ShowAlert( //display an error message if note does not exist
                 "Error",
                 ex.Message,
                 "OK");
@@ -71,10 +82,16 @@ else
         //try-catch method
         try
         {
-          
+
+
+            //synchronise UI's password with VM's password
+            view_note_view_model.Password = password;
             //decrypt content
-            //assign method into decryptedContent variable
-            decryptedContent = await NoteService.DecryptNote(Id, password);
+            //use DecryptCommand to decrypt content. DecryptCommand was created from Decrypt method which was marked as a RealyCommand
+             await view_note_view_model.DecryptCommand.ExecuteAsync(null);
+
+            //synchronise UI's decrypted content with VM's DecryptedContent
+             decryptedContent = view_note_view_model.DecryptedContent;
 
             //return true for is_unlock to disable pop up window
             isUnlocked = true;
@@ -82,11 +99,11 @@ else
         }
         catch(ValidationException ex)
         {
-            await App.Current.MainPage.DisplayAlertAsync("Input error", ex.Message, "OK");
+            await dialogService.ShowAlert("Validation error", ex.Message, "OK");
         }
         catch (InvalidPasswordException ex) //return an exception message if password is null
         {
-            await App.Current.MainPage.DisplayAlertAsync(
+            await dialogService.ShowAlert(
                "Authentication Error",
                ex.Message,
                "OK");

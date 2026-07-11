@@ -1,13 +1,16 @@
 ﻿
-using Cipher_Notes.Exceptions;
+using Cipher_Notes.Core.Exceptions;
+using Cipher_Notes.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Cipher_Notes.Services
+
+namespace Cipher_Notes.Core.Services
 {
-    public class EncryptionService
+    public class EncryptionService: IEncryptionService
     {
         //declaring variables
         private const int key_size = 256;
@@ -76,6 +79,11 @@ namespace Cipher_Notes.Services
                 return Convert.ToBase64String(ms.ToArray());
 
             }
+            
+            catch(ValidationException)//throw a validation exception if password is missing
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new InvalidOperationException("Content encryption failed", e);
@@ -127,7 +135,20 @@ namespace Cipher_Notes.Services
                 //read plaintext
                 string plain_text = reader.ReadToEnd();
 
+
+         
+
+
+
                 return plain_text; //return plain text to user
+            }
+            catch (InvalidPasswordException) //throw InvalidPasswordException if password is missing
+            {
+                throw;
+            }
+            catch (ValidationException)//throw a validation exception if password is missing
+            {
+                throw;
             }
             catch (CryptographicException ex)
             {
@@ -182,14 +203,22 @@ namespace Cipher_Notes.Services
         //generate initialization vector method
         public String GenerateIV() 
         {
-            byte[] iv = new byte[16]; //AES ENCRYPTION bytes
-            
-            //using random number generator to generate iv
-            using (var rng = RandomNumberGenerator.Create())
+            try
             {
-                rng.GetBytes(iv); 
+                byte[] iv = new byte[16]; //AES ENCRYPTION bytes
+
+                //using random number generator to generate iv
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    rng.GetBytes(iv);
+                }
+                return Convert.ToBase64String(iv);
             }
-            return Convert.ToBase64String(iv);
+            catch(CryptographicException e)
+            {
+                throw new InvalidOperationException("IV generation failed", e);
+            }
+            
         
         }
 

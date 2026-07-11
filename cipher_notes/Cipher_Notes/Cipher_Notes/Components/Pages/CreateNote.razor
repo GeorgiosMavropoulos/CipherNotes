@@ -1,11 +1,14 @@
-﻿@using Cipher_Notes.Models
+﻿@using Cipher_Notes.Core.Services
+@using Cipher_Notes.Core.ViewModels
+@using Cipher_Notes.Core.Models
+@using Cipher_Notes.Core.Exceptions
+@using Cipher_Notes.Core.Interfaces
 @using Cipher_Notes.Services
-@using Cipher_Notes.ViewModels
-@using Cipher_Notes.Models
-@using Cipher_Notes.Exceptions
 @page "/create"
-@inject NoteService NoteService
+
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject CreateNoteViewModel create_note_view_model
 
 
 
@@ -51,42 +54,73 @@
         //try-catch to handle errors
         try
         {
-            //if confirm password is null return an error message
-            if(string.IsNullOrEmpty(confirmPassword))
+
+            //sync UI fields with ViewModel
+            create_note_view_model.Title = title;
+            create_note_view_model.Content = content;
+            create_note_view_model.Password = password;
+
+            //validate that password and confirm password have been inserted
+            if (await EmptyInputsValidation())
             {
-                await Application.Current.MainPage.DisplayAlertAsync("Confirmation Error","Please confirm password","OK");
-                return;
-            }
-            //validate that password match
+                //validate that password match
                 if (await PasswordsMatch())
                 {
                     //create note
-                    await NoteService.CreateNote(title, content, password);
+                    await create_note_view_model.CreateNoteCommand.ExecuteAsync(null);
 
                     //alert user that note has been created
-                    await App.Current.MainPage.DisplayAlertAsync("Success", "Note created!", "BACK");
+                    await DialogService.ShowAlert("Success", "Note created!", "BACK");
                     Navigation.NavigateTo("/");
                 }
-                else
-                {
-                    await Application.Current.MainPage.DisplayAlertAsync("Error", "Passwords do not match", "OK");
-                }
+            }       
 
 
-            
         }
-
-        catch (ValidationException ex) //return an error message if password is null
+        catch (ValidationException ex) //return an error message if password is null or passwords do not match
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK"); //return an exception if password, content or title is null
+            await DialogService.ShowAlert("Error", ex.Message, "OK"); //return an exception if password, content or title is null
             return;
         }
 
         catch (Exception ex) //throw a general exception message if sth goes wrong
         {
-            await App.Current.MainPage.DisplayAlertAsync("Error", ex.Message, "OK");
+            await DialogService.ShowAlert("Error", ex.Message, "OK");
         }
 
+
+    }
+
+
+    //method to return exceptions if inputs are empty
+    private async Task<bool> EmptyInputsValidation()
+    {
+        //if title is empty return a ValidationException
+        if(string.IsNullOrEmpty(title))
+        {
+            throw new ValidationException("Title is missing");
+
+        }
+        else if(string.IsNullOrEmpty(content))
+        {
+            throw new ValidationException("Content is missing");
+        }
+        //if  password is null return an error message
+       else if (string.IsNullOrEmpty(password))
+        {
+
+            throw new ValidationException("Password is missing");
+
+        }
+        //if  confirmation password is null return an error message
+        else if (string.IsNullOrEmpty(confirmPassword))
+        {
+            throw new ValidationException("Please confirm password");
+
+
+        }
+
+        return true;
 
     }
 
@@ -98,7 +132,7 @@
         if (password != confirmPassword) //return an error if passwords do not match
         {
             
-            return false;
+            throw new ValidationException("Passwords do not match");
         }
         return true;
     }

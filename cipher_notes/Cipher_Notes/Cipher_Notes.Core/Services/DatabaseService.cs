@@ -1,13 +1,21 @@
 ﻿
-using Cipher_Notes.Models;
+using Cipher_Notes.Core.Exceptions;
+using Cipher_Notes.Core.Interfaces;
+using Cipher_Notes.Core.Models;
+using Cipher_Notes.Core.Services;
+
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
-namespace Cipher_Notes.Services
+namespace Cipher_Notes.Core.Services
 {
-    public class DatabaseService
+    public class DatabaseService:IDatabaseService
     {
         //declaring variables!
 
@@ -31,11 +39,11 @@ namespace Cipher_Notes.Services
                 if (initialized) return;
 
                 if (_connection == null)
-                    throw new Exception("Database connection not initialized");
+                    throw new NotFoundException("Database connection not initialized");
 
                 await _connection.CreateTableAsync<SecureNotes>();
 
-                System.Diagnostics.Debug.WriteLine("Table SecureNotes created or already exists");
+                
                 initialized = true;
             }
             finally
@@ -45,17 +53,23 @@ namespace Cipher_Notes.Services
         }
 
         //declare constructor!
-        public DatabaseService()
+        public DatabaseService(string dbPath)
         {
-            //create the connection in cosntructor since _connection variable is readonly
-
-            if (_connection != null) return; //if connection is active, the method does not initialize it again
-
-            var db_path = Path.Combine(FileSystem.AppDataDirectory, db); //define db's file path
-
-            _connection = new SQLiteAsyncConnection(db_path); //initialize the connection
+           
+            _connection = new SQLiteAsyncConnection(dbPath); //initialize the connection
         }
 
+        //create this method in order to terminate connection after each db process.For instance, when a note is being created, connection should be closed.
+        //Otherwise it's difficult for intergration tests to work, because connection is still open
+        public async Task CloseAsync()
+        {
+            if (_connection != null)
+            {
+                await _connection.CloseAsync();
+                _connection = null;
+                initialized = false;
+            }
+        }
 
         //create crud operations for the DB
 
@@ -75,7 +89,7 @@ namespace Cipher_Notes.Services
 
             }catch(Exception ex)
             {
-                throw new Exception("Failed to get all notes", ex);
+                throw new DatabaseException("Failed to retrive all notes", ex);
             }
             
         }
@@ -90,13 +104,13 @@ namespace Cipher_Notes.Services
             //try catch method to handle db errors
             try
             {
-                //return the asked note
-                return await _connection.Table<SecureNotes>().Where(x => x.Id == id).FirstOrDefaultAsync();
+                //return the requested note
+               return await _connection.Table<SecureNotes>().Where(x => x.Id == id).FirstOrDefaultAsync();
 
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to retrieve note", ex);
+                throw new DatabaseException("Failed to retrieve note", ex);
             }
 
         }
@@ -113,16 +127,24 @@ namespace Cipher_Notes.Services
             {
                 await _connection.InsertAsync(securenote);//insert the new object's details into the Db
 
-            }catch(Exception ex)
-            {
-                throw new Exception("Failed to save note in the Database", ex);
             }
+            catch (Exception ex) //return a db exception
+            {
+                throw new DatabaseException("Failed to save note in the Database", ex);
+            }
+           
             
         }
 
         //update a note function
         public async Task Update(SecureNotes securenote)
         {
+
+            //return an exception if note is null
+            if(securenote == null)
+            {
+                throw new ValidationException("Note does not exist");
+            }
             //call the db initialization method if connection has not been initialized
             if (!initialized)
                 await InitAsync();
@@ -133,12 +155,20 @@ namespace Cipher_Notes.Services
                 int rows = await _connection.UpdateAsync(securenote);//update the new object's details into the Db
 
                 if (rows == 0) //return an error message if note does not exist or not updated
-                    throw new Exception("Note not found or not updated");
+                    throw new  NotFoundException("Something went wrong.Note not found or not updated");
 
+            }
+            catch(ValidationException)
+            {
+                throw; //throw validation exxception if note is null
+            }
+            catch(NotFoundException)
+            {
+                throw; //throw NotFoundException if note is null
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to update note", ex);
+                throw new DatabaseException("Failed to update note", ex);
             }
 
         }
@@ -146,6 +176,9 @@ namespace Cipher_Notes.Services
         //delete note function
         public async Task Delete(int id)
         {
+
+            //return an error message if id does not exists
+            
             //call the db initialization method if connection has not been initialized
             if (!initialized)
                 await InitAsync();
@@ -159,13 +192,17 @@ namespace Cipher_Notes.Services
                //return an error message if id does not exist
                if(rows == 0)
                 {
-                    throw new Exception("Note does not exist");
+                    throw new NotFoundException("Note does not exist");
                 }
 
             }
+            catch(NotFoundException)
+            {
+                throw; //throw the caught not found exception
+            }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete note", ex);
+                throw new DatabaseException("Failed to delete note", ex);
             }
         }
 
