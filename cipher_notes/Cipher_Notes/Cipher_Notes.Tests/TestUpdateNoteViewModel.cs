@@ -89,5 +89,41 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expected_exception_message, exception.Message);
         }
 
+
+        ///--------------------------------Test Decrypt--------------------------------------------///
+
+        //test Decrypt method successfully decrypts the note
+        [Fact]
+        public async Task Test_Decrypt_Successfully_Decrypts_Note()
+        {
+            //Arrange
+            //declare variables
+            var password = "123";
+            var decrypted_content = "decrypted";
+            
+            var id = 1;
+         
+
+            //Assign note's id into model's Id property
+            update_note_view_model.Id = id;
+            //assign password into model's password property
+            update_note_view_model.Password = password;
+
+            //set up DecryptNote from NoteService using the mocked object to return the note
+            note_service_mocked.Setup(x => x.DecryptNote(id, password)).Returns(Task.FromResult(decrypted_content));
+
+
+            //Act
+            //execute DecryptCommand to decrypt text
+            await update_note_view_model.DecryptCommand.ExecuteAsync(id);
+
+            //Assert
+            //verify DecryptNote from NoteService has been called
+            note_service_mocked.Verify(x=> x.DecryptNote(id, password), Times.Once());
+
+            //verify decrypted_content's value is equal to update_note_view_model.DecryptedContent value
+            Assert.Equal(decrypted_content, update_note_view_model.DecryptedContent);
+        }
+
     }
 }
