@@ -232,5 +232,27 @@ namespace Cipher_Notes.Tests
 
 
         }
+
+
+        //test FindNoteByTitle returns NotFoundException if note does not exist
+        [Fact]
+        public async Task Test_FindNoteByTitle_Returns_NotFoundException()
+        {
+            //Arrange
+
+            //declare a variable to store the expected exception message
+            string expected_exception_message = "Note does not exist";
+
+
+            //Act
+            //Call the method and delegate into a variable called exception to store the exception message. Assert the method returns a NotFoundException
+            var exception = await Assert.ThrowsAsync<NotFoundException>(async () => note_list_view_model.FindNoteByTitle("test"));
+
+
+            //Assert
+            //verify the returned exception message stored in exception variable is equals to the expected_exception_message's value
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
+
     }
 }
