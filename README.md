@@ -157,127 +157,127 @@ bashdotnet test cipher_notes/Cipher_Notes.Tests/Cipher_Notes.Tests.csproj
 ```
 ### `TestEncryptionService`
 
-| Test | Description |
-|---|---|
-| `EncryptNote_ValidInput_ReturnsEncryptedData` | Encrypting valid content returns a non-null cipher text, salt, and IV, and the cipher text differs from the original content |
-| `Test_EmptyPassword_Throws_ValidationException` | An empty password throws `ValidationException`: *"Password cannot be empty"* |
-| `Test_Encrypt_Note_Randomness` | Encrypting the same content twice produces a different salt, IV, and cipher text each time (proves randomness) |
-| `Test_Decrypted_Content_Will_Be_Equals_To_The_Original_Content_Before_Being_Encrypted` | A full encrypt → decrypt round-trip returns the exact original content |
-| `Test_Decryption_Will_Return_Validation_Exception_If_Password_Null` | Decrypting with an empty password throws `ValidationException`: *"Password cannot be empty"* |
-| `Test_Decryption_Will_Return_InvalidPasswordException_If_Password_Is_Wrong` | Decrypting with a wrong password throws `InvalidPasswordException`: *"Wrong password"* |
-| `Test_DeriveKey_Will_Return_The_Same_Key_If_The_Same_Pass_And_Salt_Are_Being_Provided` | The same password and salt always produce the same derived key |
-| `Test_DeriveKey_Will_Return_Validation_Exception_If_A_Custom_Written_Salt_Has_Been_Used` | An invalid salt format throws `ValidationException`: *"Invalid salt format"* |
-| `Test_GenerateSalt_Returns_A_16_Char_Sequence` | `GenerateSalt` returns a non-null Base64 string that decodes to 16 bytes |
-| `Test_GenerateIV_Returns_A_16_Char_Sequence` | `GenerateIV` returns a non-null Base64 string that decodes to 16 bytes |
-| `Test_EncryptNote_Can_Encrypt_Large_Content` | Encrypting 10,000 characters returns a non-empty cipher that differs from the original |
-| `Test_That_EncryptNote_Can_Encrypt_Special_Chars` | Special characters are encrypted successfully |
-| `Test_That_EncryptNote_Can_Encrypt_Greek_Chars` | Greek characters are encrypted successfully |
-| `Test_That_DecryptNote_Can_Decrypt_Greek_Text` | Greek content survives a full encrypt → decrypt round-trip |
-| `Test_That_DecryptContent_Can_Decrypt_Special_Chars` | Special characters survive a full encrypt → decrypt round-trip |
-| `Test_That_DecryptContent_Can_Decrypt_Large_Text` | 10,000-character content survives a full encrypt → decrypt round-trip |
+| # | Test | Description |
+|---|---|---|
+| 1 | `EncryptNote_ValidInput_ReturnsEncryptedData` | Valid content returns non-null cipher, salt, and IV — cipher differs from original |
+| 2 | `Test_EmptyPassword_Throws_ValidationException` | Empty password → `ValidationException`: *"Password cannot be empty"* |
+| 3 | `Test_Encrypt_Note_Randomness` | Same content encrypted twice produces different salt, IV, and cipher (proves randomness) |
+| 4 | `Test_Decrypted_Content_Will_Be_Equals_To_The_Original_Content_Before_Being_Encrypted` | Full encrypt → decrypt round-trip returns exact original content |
+| 5 | `Test_Decryption_Will_Return_Validation_Exception_If_Password_Null` | Empty password on decrypt → `ValidationException`: *"Password cannot be empty"* |
+| 6 | `Test_Decryption_Will_Return_InvalidPasswordException_If_Password_Is_Wrong` | Wrong password → `InvalidPasswordException`: *"Wrong password"* |
+| 7 | `Test_DeriveKey_Will_Return_The_Same_Key_If_The_Same_Pass_And_Salt_Are_Being_Provided` | Same password + salt always produce the same derived key |
+| 8 | `Test_DeriveKey_Will_Return_Validation_Exception_If_A_Custom_Written_Salt_Has_Been_Used` | Invalid salt → `ValidationException`: *"Invalid salt format"* |
+| 9 | `Test_GenerateSalt_Returns_A_16_Char_Sequence` | Returns non-null Base64 string decoding to 16 bytes |
+| 10 | `Test_GenerateIV_Returns_A_16_Char_Sequence` | Returns non-null Base64 string decoding to 16 bytes |
+| 11 | `Test_EncryptNote_Can_Encrypt_Large_Content` | 10,000-character content encrypts successfully |
+| 12 | `Test_That_EncryptNote_Can_Encrypt_Special_Chars` | Special characters encrypt successfully |
+| 13 | `Test_That_EncryptNote_Can_Encrypt_Greek_Chars` | Greek characters encrypt successfully |
+| 14 | `Test_That_DecryptNote_Can_Decrypt_Greek_Text` | Greek content survives encrypt → decrypt round-trip |
+| 15 | `Test_That_DecryptContent_Can_Decrypt_Special_Chars` | Special characters survive encrypt → decrypt round-trip |
+| 16 | `Test_That_DecryptContent_Can_Decrypt_Large_Text` | 10,000-character content survives encrypt → decrypt round-trip |
 
 ---
 
 ### `TestNoteService`
 
-| Test | Description |
-|---|---|
-| `Test_CreateNote_ValidInput_Calls_Create` | `CreateNote` with valid inputs calls `DatabaseService.Create` exactly once |
-| `Test_CreateNote_Returns_ValidationException_When_Title_Missing` | Missing title throws `ValidationException`: *"Title is empty"* |
-| `Test_CreateNote_Returns_ValidationException_When_Content_Missing` | Missing content throws `ValidationException`: *"Content is empty"* |
-| `Test_CreateNote_Returns_ValidationException_When_Password_Missing` | Missing password throws `ValidationException`: *"Password is missing"* |
-| `Test_GetAllNotes_Returns_A_List_With_A_Single_Note` | Returns a list containing the expected note |
-| `Test_GetAllNotes_Returns_An_Empty_List_If_DB_Is_Empty` | Returns an empty non-null list when the database is empty |
-| `Test_GetAllNotes_Returns_The_Expected_Exception` | Propagates a general exception with the message *"Failed to get notes"* |
-| `Test_GetNoteById_Returnes_The_Requested_Note` | Returns the correct note by ID |
-| `Test_GetNoteById_Returns_NotFoundException_With_The_Appropriate_Message_When_Note_Does_Not_Exist` | Throws `NotFoundException`: *"Note not found"* when the ID does not exist |
-| `Test_GetNoteById_Returns_The_Expected_General_Exception` | Propagates a general exception with the message *"Failed to get note"* |
-| `Test_DecryptNote_Successfully_Decrypts_Note` | Successfully decrypts a note and returns the plain text |
-| `Test_DecryptNote_Will_Return_ValidationException_If_Password_Is_Empty` | Throws `ValidationException`: *"Password is missing"* |
-| `Test_DecryptNote_Returns_InvalidPasswordException_If_Password_Is_Wrong` | Throws `InvalidPasswordException`: *"Wrong Password"* |
-| `Test_DecryptContent_Returns_NotFoundException` | Throws `NotFoundException` when note does not exist |
-| `Test_DecryptNote_Returns_CryptographicException` | Throws `CryptographicException` containing *"Decryption error"* on cryptographic failure |
-| `Test_DecryptNote_Returns_Exception` | Propagates a general exception with the message *"Unexpected error during decryption"* |
-| `Test_UpdateNote_updates_note_successfully` | `UpdateNote` calls `DatabaseService.Update` exactly once on success |
-| `Test_UpdateNote_Returns_ValidationException_if_Content_Is_Missing` | Throws `ValidationException`: *"Content is empty"* |
-| `Test_UpdateNote_Returns_ValidationException_if_Title_Is_Missing` | Throws `ValidationException`: *"Title is empty"* |
-| `Test_UpdateNote_Returns_ValidationException_if_Password_Is_Missing` | Throws `ValidationException`: *"Password is missing"* |
-| `Test_UpdateNote_Returns_InvalidPasswordException_if_Password_Is_Wrong` | Throws `InvalidPasswordException`: *"Wrong password"* |
-| `Test_UpdateNote_Returns_NotFoundException_If_Note_Does_Not_Exist` | Throws `NotFoundException`: *"Note not found"* |
-| `Test_UpdateNote_Returns_CryptographicException_If_Decryption_Fail` | Throws `CryptographicException` when decryption fails during update |
-| `Test_UpdateNote_Returns_CryptographicException_If_Encryption_Fail` | Throws `CryptographicException` when re-encryption fails during update |
-| `Test_ApplyEncryption_Successfully_Encrypts_Note` | Encrypts note and updates `Encrypted_content`, `Salt`, and `IV` properties correctly |
-| `Test_ApplyEncryption_Returns_ValidationException_If_Password_Is_Empty` | Throws `ValidationException`: *"Password is missing"* |
-| `Test_ApplyEncryption_Returns_ValidationException_If_Content_Is_Empty` | Throws `ValidationException`: *"Content is missing"* |
-| `Test_ApplyEncryption_Returns_NotFoundException_If_Note_Is_Empty` | Throws `NotFoundException`: *"Note does not exist"* |
-| `Test_that_AppleyEncryption_Returns_Successfully_CryptographicException` | Throws `CryptographicException`: *"Encryption failed"* |
-| `Test_Delete_Sucessfully_Deletes_Notes` | `Delete` calls `DatabaseService.Delete` exactly once on success |
-| `Test_Delete_Returns_NotFoundException_If_Note_Does_Not_Exist` | Throws `NotFoundException`: *"Note not found"* |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_CreateNote_ValidInput_Calls_Create` | Valid inputs → `DatabaseService.Create` called once |
+| 2 | `Test_CreateNote_Returns_ValidationException_When_Title_Missing` | Missing title → `ValidationException`: *"Title is empty"* |
+| 3 | `Test_CreateNote_Returns_ValidationException_When_Content_Missing` | Missing content → `ValidationException`: *"Content is empty"* |
+| 4 | `Test_CreateNote_Returns_ValidationException_When_Password_Missing` | Missing password → `ValidationException`: *"Password is missing"* |
+| 5 | `Test_GetAllNotes_Returns_A_List_With_A_Single_Note` | Returns list with the expected note |
+| 6 | `Test_GetAllNotes_Returns_An_Empty_List_If_DB_Is_Empty` | Returns empty non-null list when DB is empty |
+| 7 | `Test_GetAllNotes_Returns_The_Expected_Exception` | Propagates exception: *"Failed to get notes"* |
+| 8 | `Test_GetNoteById_Returnes_The_Requested_Note` | Returns correct note by ID |
+| 9 | `Test_GetNoteById_Returns_NotFoundException_With_The_Appropriate_Message_When_Note_Does_Not_Exist` | ID not found → `NotFoundException`: *"Note not found"* |
+| 10 | `Test_GetNoteById_Returns_The_Expected_General_Exception` | Propagates exception: *"Failed to get note"* |
+| 11 | `Test_DecryptNote_Successfully_Decrypts_Note` | Successfully decrypts and returns plain text |
+| 12 | `Test_DecryptNote_Will_Return_ValidationException_If_Password_Is_Empty` | Empty password → `ValidationException`: *"Password is missing"* |
+| 13 | `Test_DecryptNote_Returns_InvalidPasswordException_If_Password_Is_Wrong` | Wrong password → `InvalidPasswordException`: *"Wrong Password"* |
+| 14 | `Test_DecryptContent_Returns_NotFoundException` | Note not found → `NotFoundException` |
+| 15 | `Test_DecryptNote_Returns_CryptographicException` | Crypto failure → `CryptographicException`: *"Decryption error"* |
+| 16 | `Test_DecryptNote_Returns_Exception` | Propagates exception: *"Unexpected error during decryption"* |
+| 17 | `Test_UpdateNote_updates_note_successfully` | `DatabaseService.Update` called once on success |
+| 18 | `Test_UpdateNote_Returns_ValidationException_if_Content_Is_Missing` | Missing content → `ValidationException`: *"Content is empty"* |
+| 19 | `Test_UpdateNote_Returns_ValidationException_if_Title_Is_Missing` | Missing title → `ValidationException`: *"Title is empty"* |
+| 20 | `Test_UpdateNote_Returns_ValidationException_if_Password_Is_Missing` | Missing password → `ValidationException`: *"Password is missing"* |
+| 21 | `Test_UpdateNote_Returns_InvalidPasswordException_if_Password_Is_Wrong` | Wrong password → `InvalidPasswordException`: *"Wrong password"* |
+| 22 | `Test_UpdateNote_Returns_NotFoundException_If_Note_Does_Not_Exist` | Note not found → `NotFoundException`: *"Note not found"* |
+| 23 | `Test_UpdateNote_Returns_CryptographicException_If_Decryption_Fail` | Decryption failure → `CryptographicException` |
+| 24 | `Test_UpdateNote_Returns_CryptographicException_If_Encryption_Fail` | Re-encryption failure → `CryptographicException` |
+| 25 | `Test_ApplyEncryption_Successfully_Encrypts_Note` | Updates `Encrypted_content`, `Salt`, and `IV` correctly |
+| 26 | `Test_ApplyEncryption_Returns_ValidationException_If_Password_Is_Empty` | Empty password → `ValidationException`: *"Password is missing"* |
+| 27 | `Test_ApplyEncryption_Returns_ValidationException_If_Content_Is_Empty` | Empty content → `ValidationException`: *"Content is missing"* |
+| 28 | `Test_ApplyEncryption_Returns_NotFoundException_If_Note_Is_Empty` | Null note → `NotFoundException`: *"Note does not exist"* |
+| 29 | `Test_that_AppleyEncryption_Returns_Successfully_CryptographicException` | Crypto failure → `CryptographicException`: *"Encryption failed"* |
+| 30 | `Test_Delete_Sucessfully_Deletes_Notes` | `DatabaseService.Delete` called once on success |
+| 31 | `Test_Delete_Returns_NotFoundException_If_Note_Does_Not_Exist` | Note not found → `NotFoundException`: *"Note not found"* |
 
 ---
 
-### `TestDatabaseService` (Integration Tests)
+### `TestDatabaseService` — Integration Tests
 
-| Test | Description |
-|---|---|
-| `Test_Create_Successfully_Creates_Note_and_GetById_Successfully_Returns_The_Created_Note` | Creates a note and retrieves it by ID — verifies title, salt, and IV match |
-| `Test_Create_Method_Returns_DatabaseException` | Throws `DatabaseException`: *"Failed to save note in the Database"* on failure |
-| `Test_Update_Successfully_Updates_Notes` | Updates title and content and verifies the changes are persisted |
-| `Test_Update_Returns_ValidationException_If_Note_Is_Null` | Throws `ValidationException`: *"Note does not exist"* when note is null |
-| `Test_Update_Returns_NotFoundException_If_DB_Query_Return_0_Rows_Changed` | Throws `NotFoundException` when no rows are affected |
-| `Test_Delete_Successfully_Delete_Notes` | Deletes a note and confirms `GetById` returns null afterwards |
-| `Test_Delete_Returns_NotFoundException_If_Id_Does_Not_Exists` | Throws `NotFoundException`: *"Note does not exist"* |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_Create_Successfully_Creates_Note_and_GetById_Successfully_Returns_The_Created_Note` | Creates note and retrieves it — verifies title, salt, and IV |
+| 2 | `Test_Create_Method_Returns_DatabaseException` | Failure → `DatabaseException`: *"Failed to save note in the Database"* |
+| 3 | `Test_Update_Successfully_Updates_Notes` | Updates title and content — verifies changes are persisted |
+| 4 | `Test_Update_Returns_ValidationException_If_Note_Is_Null` | Null note → `ValidationException`: *"Note does not exist"* |
+| 5 | `Test_Update_Returns_NotFoundException_If_DB_Query_Return_0_Rows_Changed` | 0 rows affected → `NotFoundException` |
+| 6 | `Test_Delete_Successfully_Delete_Notes` | Deletes note — `GetById` returns null afterwards |
+| 7 | `Test_Delete_Returns_NotFoundException_If_Id_Does_Not_Exists` | ID not found → `NotFoundException`: *"Note does not exist"* |
 
 ---
 
 ### `TestCreateNoteViewModel`
 
-| Test | Description |
-|---|---|
-| `Test_CreateNote_Successfully_Creates_Notes` | Calls `NoteService.CreateNote` with the correct title, content, and password exactly once |
-| `Test_CreateNote_Returns_General_Exception` | Propagates a general exception from the service to the caller |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_CreateNote_Successfully_Creates_Notes` | `NoteService.CreateNote` called with correct values exactly once |
+| 2 | `Test_CreateNote_Returns_General_Exception` | Propagates general exception from service to caller |
 
 ---
 
 ### `TestDecryptNoteViewModel`
 
-| Test | Description |
-|---|---|
-| `Test_DecryptNote_Successfully_Decrypt_Notes` | Calls `NoteService.DecryptNote` and stores the result in `Decrypted_content` |
-| `Test_DecryptNote_Successfully_Returns_General_Exception` | Propagates a general exception with the message *"Unexpected error during decryption"* |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_DecryptNote_Successfully_Decrypt_Notes` | `NoteService.DecryptNote` called — result stored in `Decrypted_content` |
+| 2 | `Test_DecryptNote_Successfully_Returns_General_Exception` | Propagates exception: *"Unexpected error during decryption"* |
 
 ---
 
 ### `TestUpdateNoteViewModel`
 
-| Test | Description |
-|---|---|
-| `Test_LoadNote_Successfully_Returns_The_Requested_Note` | Calls `NoteService.GetNoteById` exactly once and stores the note |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_LoadNote_Successfully_Returns_The_Requested_Note` | `NoteService.GetNoteById` called once — note stored in ViewModel |
 
 ---
 
 ### `TestNoteListViewModel`
 
-| Test | Description |
-|---|---|
-| `Test_LoadNotes_Successfully_Loads_Existing_Notes` | Loads 2 notes and verifies titles match |
-| `Test_LoadNotes_Returns_General_Exception` | Propagates a general exception with the message *"Failed to get notes"* |
-| `Test_DeleteNote_Deletes_Note_With_Success` | Calls `NoteService.Delete` exactly once on success |
-| `Test_DeleteNote_Returns_Exception` | Propagates a general exception with the message *"Error.Deletion failed"* |
-| `Test_DeleteNote_Removes_Deleted_Notes_From_The_List` | Removes the deleted note from the `Notes` collection and verifies count is 0 |
-| `Test_FindNoteByTitle_Successfully_Returns_Title` | Returns the correct note when the title matches |
-| `Test_FindNoteByTitle_Returns_NotFoundException` | Throws `NotFoundException`: *"Note does not exist"* when the notes collection is empty |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_LoadNotes_Successfully_Loads_Existing_Notes` | Loads 2 notes — titles verified |
+| 2 | `Test_LoadNotes_Returns_General_Exception` | Propagates exception: *"Failed to get notes"* |
+| 3 | `Test_DeleteNote_Deletes_Note_With_Success` | `NoteService.Delete` called once on success |
+| 4 | `Test_DeleteNote_Returns_Exception` | Propagates exception: *"Error.Deletion failed"* |
+| 5 | `Test_DeleteNote_Removes_Deleted_Notes_From_The_List` | Deleted note removed from `Notes` collection — count verified as 0 |
+| 6 | `Test_FindNoteByTitle_Successfully_Returns_Title` | Returns correct note when title matches |
+| 7 | `Test_FindNoteByTitle_Returns_NotFoundException` | Empty collection → `NotFoundException`: *"Note does not exist"* |
 
 ---
 
 ### `Test_ViewNoteViewModel`
 
-| Test | Description |
-|---|---|
-| `Test_LoadNote_Successfully_Returns_The_Requested_Note` | Calls `NoteService.GetNoteById` and stores the note in the `Note` property |
-| `Test_LoadNote_Successfully_Returns_General_Exception` | Propagates a general exception with the message *"Failed to get note"* |
-| `Test_Decrypt_Success_Decrypts_Note` | Calls `NoteService.DecryptNote` and stores the result in `DecryptedContent` |
-| `Test_Decrypt_Returns_General_Exception_With_Success` | Propagates a general exception with the message *"Unexpected error during decryption"* |
+| # | Test | Description |
+|---|---|---|
+| 1 | `Test_LoadNote_Successfully_Returns_The_Requested_Note` | `NoteService.GetNoteById` called — note stored in `Note` property |
+| 2 | `Test_LoadNote_Successfully_Returns_General_Exception` | Propagates exception: *"Failed to get note"* |
+| 3 | `Test_Decrypt_Success_Decrypts_Note` | `NoteService.DecryptNote` called — result stored in `DecryptedContent` |
+| 4 | `Test_Decrypt_Returns_General_Exception_With_Success` | Propagates exception: *"Unexpected error during decryption"* |
 ```
    
 ## 🔒 Security Notes
