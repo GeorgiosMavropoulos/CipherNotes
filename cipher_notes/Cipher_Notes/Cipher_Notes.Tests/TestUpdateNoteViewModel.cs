@@ -68,5 +68,26 @@ namespace Cipher_Notes.Tests
            
         }
 
+        //test LoadNote returns general exception
+        [Fact]
+        public async Task Test_LoadNote_Returns_General_Exception()
+        {
+            //Arrange
+            //declare a variable expected_exception message 
+            string expected_exception_message = "Failed to get note";
+
+            //set up GetNoteById from NoteService to return a general exception using note_service_moced object
+            note_service_mocked.Setup(x => x.GetNoteById(1)).Throws(new Exception("Failed to get note"));
+
+            //Act
+            //execute LoadNoteCommand. Delegate it into a variable to store the result. Assert it will return an Exception
+            var exception = await Assert.ThrowsAsync<Exception>(() => update_note_view_model.LoadNoteCommand.ExecuteAsync(1));
+
+
+            //Assert
+            //verify exception's message is equal to expected_exception_message 
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
+
     }
 }
