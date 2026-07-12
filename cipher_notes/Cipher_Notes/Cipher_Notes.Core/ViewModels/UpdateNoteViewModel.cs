@@ -57,6 +57,10 @@ namespace Cipher_Notes.Core.ViewModels
             //decrypt through NoteService's decryption method
             DecryptedContent = await note_service.DecryptNote(Id, Password);    
         }
+
+
+
+
         //method to create the update command
         [RelayCommand]
         public async Task Update(int id)
