@@ -157,5 +157,52 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expected_exception_message, exception.Message);
         }
 
+
+
+
+        ///---------------------------------Testing Update---------------------------------------------------------///
+
+        //test Update successfully updates a note
+        [Fact]
+        public async Task Test_Update_Successfully_Updates_Note()
+        {
+            //Arrange
+            //declare variables
+            int id = 1;
+            string title = "title";
+            string password = "pass";
+            string content = "content";
+            
+            //create a new note object
+            var note = new SecureNotes
+            {
+                Id = id,
+                Title = title,
+                Encrypted_content = content,
+                Salt = "salt",
+                IV = "iv"
+            };
+
+           
+            
+            //set up note service's object to return the completed task when UpdateNote is being called
+            note_service_mocked.Setup(x=>x.UpdateNote(id, title, content, password)).Returns(Task.CompletedTask);
+
+            //Assign variable's values to model's properties
+            update_note_view_model.Title = title;
+
+            update_note_view_model.DecryptedContent = content;
+            update_note_view_model.Id = id;
+            update_note_view_model.Password = password;
+
+            //Act
+            //execute UpdateCommand from view model
+            await update_note_view_model.Update(id);
+
+            //Assert 
+
+            //verify that UpdateNote has been called once
+            note_service_mocked.Verify(x => x.UpdateNote(id, title, content, password), Times.Once);
+        }
     }
 }
