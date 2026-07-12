@@ -197,12 +197,45 @@ namespace Cipher_Notes.Tests
 
             //Act
             //execute UpdateCommand from view model
-            await update_note_view_model.Update(id);
+            await update_note_view_model.UpdateCommand.ExecuteAsync(id);
 
             //Assert 
 
             //verify that UpdateNote has been called once
             note_service_mocked.Verify(x => x.UpdateNote(id, title, content, password), Times.Once);
         }
+
+        //test that Update method returns NotFoundException if id does not exist
+        [Fact]
+        public async Task Test_Update_Returns_NotFoundException()
+        {
+            //Arrange
+            //declare a variable to store the expected exception message
+            var expected_exception_message = "Note not found";
+
+            //declare variables
+            var title = "title";
+            var content = "content";
+            var pass = "pass";
+            var id = 2;
+
+            //set up UpdateNote from NoteService to return NotFoundException when is being called
+            note_service_mocked.Setup(x => x.UpdateNote(id, title, content, pass)).Throws(new NotFoundException("Note not found"));
+
+            //assign value's to model's properties
+            update_note_view_model.Title = title;
+            update_note_view_model.DecryptedContent = content;
+            update_note_view_model.Id = id;
+            update_note_view_model.Password = pass;
+
+            //Act
+            //execute UpdateCommand and delegate the result into a variable. Assert it returns a NotFoundException
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => update_note_view_model.UpdateCommand.ExecuteAsync(2));
+
+            //Assert
+            //verify that exception message is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
+
     }
 }
