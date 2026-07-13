@@ -20,7 +20,7 @@ namespace Cipher_Notes
                 });
 
            
-            builder.Services.AddTransient<NoteListViewModel>();
+           
 
            
             builder.Services.AddTransient<MainPage>();
