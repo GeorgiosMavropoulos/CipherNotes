@@ -237,5 +237,40 @@ namespace Cipher_Notes.Tests
             Assert.Equal(expected_exception_message, exception.Message);
         }
 
+        //test Update returns a general exception
+        [Fact]
+        public async Task Test_Update_Returnr_General_Exception()
+        {
+            //Arrange
+            //declare a variable to store the expected exception message
+            var expected_exception_message = "Error.Cannot update the note";
+
+            //declare variables
+            var title = "title";
+            var content = "content";
+            var pass = "pass";
+            var id = 1;
+
+            //set up UpdateNote from NoteService to return NotFoundException when is being called
+            note_service_mocked.Setup(x => x.UpdateNote(id, title, content, pass)).Throws(new Exception("Error.Cannot update the note"));
+
+            //assign value's to model's properties
+            update_note_view_model.Title = title;
+            update_note_view_model.DecryptedContent = content;
+            update_note_view_model.Id = id;
+            update_note_view_model.Password = pass;
+
+
+            //Act
+            //Act
+            //execute UpdateCommand and delegate the result into a variable. Assert it returns a NotFoundException
+            var exception = await Assert.ThrowsAsync<Exception>(() => update_note_view_model.UpdateCommand.ExecuteAsync(1));
+
+            //Assert
+            
+            //verify that exception message is equals to expected_exception_message
+            Assert.Equal(expected_exception_message, exception.Message);
+        }
+
     }
 }
