@@ -139,7 +139,34 @@ cipher_notes/
     └── TestNoteListViewModel.cs       # Unit tests for NoteListViewModel
     └── TestUpdateNoteViewModel.cs     # Unit tests for UpdateNoteViewModel
 ```
+🔐 Security
 
+Encryption
+
+Notes are encrypted using AES-256-CBC with a user-defined password. Each note gets a unique random Salt and IV (Initialization Vector), ensuring that two notes encrypted with the same password produce completely different cipher text.
+
+Key Derivation
+
+The encryption key is never stored. It is derived at runtime from the user's password using PBKDF2-SHA256 with 10,000 iterations and a random 128-bit salt.
+
+Password + Salt → PBKDF2-SHA256 (10,000 iterations) → 256-bit Key
+
+Password Verification (HMAC)
+
+A common issue with AES-CBC is that decrypting with a wrong password can silently return garbage data instead of throwing an error. To solve this, an HMAC-SHA256 is computed over the cipher text using the derived key and prepended to the stored cipher.
+
+Encrypt: HMAC(key, cipherBytes) + cipherBytes → stored as one Base64 string
+Decrypt: recompute HMAC → compare with stored HMAC
+            ✅ match    → correct password → proceed to decrypt
+            ❌ no match → wrong password   → InvalidPasswordException
+
+This guarantees that a wrong password always throws an InvalidPasswordException before any decryption is attempted — no garbage data is ever returned.
+
+What is stored per note
+
+FieldDescriptionEncrypted_contentHMAC (32 bytes) + AES cipher text, Base64 encodedSaltRandom 128-bit salt, Base64 encodedIVRandom 128-bit initialization vector, Base64 encoded
+
+The password is never stored anywhere.
 
 🧪 Testing
 
