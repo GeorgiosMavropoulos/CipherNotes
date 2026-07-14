@@ -42,11 +42,18 @@ namespace Cipher_Notes.Core.Services
 
             string cipherText = Encrypt(content,key, iv);
 
+            //compute Hmac and add it in cipherText
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+
+            byte[] Hmac = ComputeHmac(key, cipherBytes);//calculate hmac's hash
+            // connect Hmac with cipherBytes value and add them in an array
+            byte[] combined = Hmac.Concat(cipherBytes).ToArray();
+
             //return encrypted string
-            return (cipherText, salt, iv);
+            return (Convert.ToBase64String(combined), salt, iv);
 
 
-            
+
         }
 
         //method to ecnrypt the text
@@ -55,6 +62,7 @@ namespace Cipher_Notes.Core.Services
             //try catch method to handle errors
             try
             {
+               
 
                 //use AES encryption
                 using var aes = Aes.Create();
@@ -102,6 +110,7 @@ namespace Cipher_Notes.Core.Services
             //derive key from password + salt
             byte[] key = DeriveKey(password, salt);
            
+
             return Decrypt(encrypted_content, key, iv); //return decrypted content
         }
 
@@ -111,10 +120,26 @@ namespace Cipher_Notes.Core.Services
             //try-catch method to handle unexpected errors
             try
             {
+                //convert in a string form the hashed content
+                byte[] combined = Convert.FromBase64String(encrypted_content);
+
+                //seperate hmac from cipher
+                byte[] storedHmac = combined.Take(32).ToArray();
+                byte[] cipherBytes = combined.Skip(32).ToArray();
+
+                //verify that Hmac is equal with the expected one
+                byte[] expectedHmac = ComputeHmac(key, cipherBytes);
+
+                //if not, throw an InvalidPasswordException since this error occus from an invalid password
+                if (!CryptographicOperations.FixedTimeEquals(storedHmac, expectedHmac))
+                {
+                    throw new InvalidPasswordException("Wrong password");
+                }
+                   
 
                 //convert iv + cipher text from Base64
                 byte[] ivBytes = Convert.FromBase64String(iv);
-                byte[] cipherBytes = Convert.FromBase64String(encrypted_content);
+                
 
                 //set up AES
                 using var aes = Aes.Create();
@@ -136,9 +161,8 @@ namespace Cipher_Notes.Core.Services
                 string plain_text = reader.ReadToEnd();
 
 
-         
 
-
+             
 
                 return plain_text; //return plain text to user
             }
@@ -223,5 +247,18 @@ namespace Cipher_Notes.Core.Services
         }
 
 
+        //generate an HMAC in order to validate that cryptographic data hasn't been tampered.
+        //However I implemented this method because continuous tests for DecryptMethod sometimes fail
+        //because when password is wrong it returns garbage data. I will use it in order to validate
+        //key before decryption.If validation fails it will never reach Decrypt method
+
+        //
+        private byte[] ComputeHmac(byte[] key, byte[] data)
+        {
+            //create a new Hmac key
+            using var hmac = new HMACSHA256(key);
+
+            return hmac.ComputeHash(data);//return the computed hash
+        }
     }
 }
